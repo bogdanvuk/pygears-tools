@@ -1,5 +1,7 @@
 from .utils import configure, make
 
+dependencies = 'build-essential'
+
 
 def flow(pkg):
     configure(pkg)

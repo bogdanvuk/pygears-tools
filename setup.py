@@ -1,14 +1,13 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 setup(
-    name='pygears',
-    version='0.1',
-    description='Framework for functional hardware design approach',
+    name='pygears-tools',
+    version='0.1a7',
+    description='Helper scripts for installing pygears related tools',
 
     # The project's main homepage.
     url='https://github.com/bogdanvuk/pygears-tools',
-    # download_url = '',
 
     # Author details
     author='Bogdan Vukobratovic',
@@ -17,11 +16,12 @@ setup(
     # Choose your license
     license='MIT',
 
-    package_data={'': ['*.json']},
+    packages=find_packages(exclude=['examples*', 'docs']),
+    package_data={'': ['*.json', '.spacemacs']},
     include_package_data=True,
     entry_points={
         'console_scripts': [
-            'pygears_tools_install = pygears_tools.install:main'
+            'pygears-tools-install = pygears_tools.install:main'
         ],
     }
 )

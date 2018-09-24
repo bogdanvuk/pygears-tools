@@ -86,14 +86,14 @@ def download_and_untar(pkg):
 
 
 def install_deps(pkg):
-    if not "deps" in pkg:
+    if "deps" not in pkg:
         return True
 
     pkg["logger"].info(
         "Installing dependencies. Output redirected to dependencies.log .")
     subprocess.run(
-        "sudo apt install -y " + pkg["deps"] + " > " +
-        os.path.join(pkg["path"], "_install", "dependencies.log") + " 2>&1",
+        "sudo apt install -y " + pkg["deps"] + " > " + os.path.join(
+            pkg["path"], "_install", "dependencies.log") + " 2>&1",
         shell=True,
         check=True)
 
@@ -134,12 +134,22 @@ def cmake(pkg):
 def make(pkg):
     os.chdir(pkg["src_root_path"].format(**pkg))
 
-    pkg["logger"].info("Running make. Output redirected to make.log .")
-    subprocess.check_output("make -j8 > ../make.log 2>&1", shell=True)
-    pkg["logger"].info(
-        "Running make install. Output redirected to make_install.log .")
-    subprocess.check_output(
-        "make install > ../make_install.log 2>&1", shell=True)
+    try:
+        pkg["logger"].info("Running make. Output redirected to make.log .")
+        subprocess.check_output("make -j8 > ../make.log 2>&1", shell=True)
+    except subprocess.CalledProcessError:
+        pkg["logger"].error(
+            "Make finished with error, please check the log.")
+
+    try:
+        pkg["logger"].info(
+            "Running make install. Output redirected to make_install.log .")
+        subprocess.check_output(
+            "make install > ../make_install.log 2>&1", shell=True)
+    except subprocess.CalledProcessError:
+        pkg["logger"].error(
+            "Make install finished with error, please check the log.")
+
     os.chdir(pkg["path"])
 
 

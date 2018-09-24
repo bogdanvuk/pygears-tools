@@ -1,5 +1,27 @@
 [
     {
+            "name": "emacs",
+            "flow": "default_cpp",
+            "url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.1.tar.gz",
+            "src_root_path": "{install_path}/emacs-26.1",
+            "deps": "libjpeg-dev gnutls-dev libx11-dev libpng-dev libncurses5-dev libxml2-dev libgtk-3-dev libgtk2.0-dev libtiff-dev libgif-dev libxpm-dev",
+            "configure": "",
+            "env" : [
+                "export PATH={path}/bin:$PATH"
+            ]
+    },
+	  {
+		    "name": "spacemacs",
+		    "git": "https://github.com/syl20bnr/spacemacs.git",
+		    "src_root_path": "{home_path}/.emacs.d",
+		    "copy": [
+			      ["{install_script_path}/.spacemacs", "{home_path}"]
+		    ],
+		    "post_custom_run": [
+			      "cd {home_path}/.emacs.d; git checkout develop"
+		    ]
+	  },
+    {
 		    "name": "verilator",
 		    "flow": "default_cpp",
 		    "url": "https://www.veripool.org/ftp/verilator-3.926.tgz",
@@ -10,7 +32,7 @@
             "cp {path}/share/verilator/bin/* {path}/bin"
 		    ],
 		    "configure": "",
-		    "deps": "build-essential autoconf flex bison",
+		    "deps": "autoconf flex bison",
 		    "env" : [
 			      "export VERILATOR_ROOT={path}",
 			      "export PATH={path}/bin:$PATH"
@@ -20,7 +42,7 @@
 		    "name": "gtkwave",
 		    "flow": "default_cpp",
 		    "url": "http://gtkwave.sourceforge.net/gtkwave-3.3.93.tar.gz",
-		    "deps": "build-essential gperf libgtk2.0-dev",
+		    "deps": "gperf libgtk2.0-dev",
 		    "src_root_path": "{install_path}/gtkwave-3.3.93",
 		    "configure": "",
 		    "env" : [
@@ -51,5 +73,37 @@
 			      "export SCV_INCLUDE={path}/include",
 			      "export SCV_LIBDIR={path}/lib-linux64"
 		    ]
-    }
+    },
+	  {
+		    "name": "pyenv",
+		    "git": "https://github.com/pyenv/pyenv.git",
+		    "src_root_path": "{home_path}/.pyenv",
+        "deps": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev",
+		    "env" : [
+			      "export PYENV_ROOT={home_path}/.pyenv",
+			      "export PATH={home_path}/.pyenv/bin:$PATH",
+			      "eval \"$(pyenv init -)\"",
+				  "export PATH={home_path}/.pyenv/libexec:$PATH"
+		    ]
+	  },
+	  {
+		    "name": "python",
+		    "post_custom_run" : [
+			      "pyenv install -s 3.6.6",
+			      "pyenv global 3.6.6",
+            "rm -rf {home_path}/.local"
+		    ]
+	  },
+	  {
+		    "name": "spacemacs_python",
+		    "post_custom_run" : [
+			      "pip install anaconda-mode autoflake epc flake8 importmagic jedi yapf"
+		    ]
+	  },
+	  {
+		    "name": "pygears",
+		    "post_custom_run" : [
+			      "pip install pygears"
+		    ]
+	  }
 ]
