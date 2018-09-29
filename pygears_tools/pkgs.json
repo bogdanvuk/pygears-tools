@@ -1,14 +1,17 @@
 [
     {
-            "name": "emacs",
-            "flow": "default_cpp",
-            "url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.1.tar.gz",
-            "src_root_path": "{install_path}/emacs-26.1",
-            "deps": "libjpeg-dev gnutls-dev libx11-dev libpng-dev libncurses5-dev libxml2-dev libgtk-3-dev libgtk2.0-dev libtiff-dev libgif-dev libxpm-dev",
-            "configure": "",
-            "env" : [
-                "export PATH={path}/bin:$PATH"
-            ]
+        "name": "emacs",
+        "flow": "default_cpp",
+        "url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.1.tar.gz",
+        "src_root_path": "{install_path}/emacs-26.1",
+        "deps": {
+            "ubuntu": "libjpeg-dev gnutls-dev libx11-dev libpng-dev libncurses5-dev libxml2-dev libgtk-3-dev libgtk2.0-dev libtiff-dev libgif-dev libxpm-dev",
+            "opensuse": "libjpeg-devel libgnutls-devel libX11-devel libpng-devel libncurses5 libxml2-devel gtk3-devel gtk2-devel libtiff-devel giflib-devel libXpm-devel"
+        },
+        "configure": "",
+        "env" : [
+            "export PATH={path}/bin:$PATH"
+        ]
     },
 	  {
 		    "name": "spacemacs",
@@ -32,7 +35,10 @@
             "cp {path}/share/verilator/bin/* {path}/bin"
 		    ],
 		    "configure": "",
-		    "deps": "autoconf flex bison",
+		    "deps": {
+            "ubuntu": "autoconf flex bison",
+            "opensuse": "flex bison"
+        },
 		    "env" : [
 			      "export VERILATOR_ROOT={path}",
 			      "export PATH={path}/bin:$PATH"
@@ -42,7 +48,10 @@
 		    "name": "gtkwave",
 		    "flow": "default_cpp",
 		    "url": "http://gtkwave.sourceforge.net/gtkwave-3.3.93.tar.gz",
-		    "deps": "gperf libgtk2.0-dev",
+		    "deps": {
+            "ubuntu": "gperf libgtk2.0-dev",
+            "opensuse": "gperf gtk2-devel"
+        },
 		    "src_root_path": "{install_path}/gtkwave-3.3.93",
 		    "configure": "",
 		    "env" : [
@@ -54,7 +63,7 @@
 		    "flow": "default_cpp",
 		    "url": "http://accellera.org/images/downloads/standards/systemc/systemc-2.3.2.tar.gz",
 		    "src_root_path": "{install_path}/systemc-2.3.2",
-        "configure": "",
+        "configure": "--libdir='${prefix}/lib'",
 		    "env" : [
 			      "export SYSTEMC_DISABLE_COPYRIGHT_MESSAGE=1",
 			      "export SYSTEMC_HOME={path}",
@@ -78,7 +87,10 @@
 		    "name": "pyenv",
 		    "git": "https://github.com/pyenv/pyenv.git",
 		    "src_root_path": "{home_path}/.pyenv",
-        "deps": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev xz-utils tk-dev",
+        "deps": {
+            "ubuntu": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev",
+            "opensuse": "openssl-devel ncurses-devel readline-devel zlib-devel tk-devel libffi-devel"
+        },
 		    "env" : [
 			      "export PYENV_ROOT={home_path}/.pyenv",
 			      "export PATH={home_path}/.pyenv/bin:$PATH",

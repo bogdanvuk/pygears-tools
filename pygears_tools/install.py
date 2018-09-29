@@ -8,6 +8,7 @@ import shutil
 import glob
 import errno
 import argparse
+import configparser
 from pygears_tools.utils import (shell_source, custom_run, download_and_untar,
                                  clone_git, install_deps, set_env)
 from pygears_tools import default_cpp
@@ -35,6 +36,35 @@ def create_logger(pkg):
     pkg["logger"] = logger
 
 
+def os_name():
+    with open('/etc/os-release') as f:
+        file_content = '[root]\n' + f.read()
+
+    os_cfg = configparser.RawConfigParser()
+    os_cfg.read_string(file_content)
+
+    name = os_cfg['root']['NAME'].strip('"').split()[0].lower()
+
+    return name
+
+
+def os_install_cmd():
+    name = os_name()
+    if name == "ubuntu":
+        return "sudo apt install"
+    elif name == "opensuse":
+        return "sudo zypper install"
+    else:
+        raise "Unsupported OS"
+
+
+def filter_deps_by_os(pkgs):
+    name = os_name()
+    for pkg in pkgs:
+        if 'deps' in pkg:
+            pkg['deps'] = pkg['deps'][name]
+
+
 def copyanything(src, dst):
     try:
         shutil.copytree(src, dst)
@@ -48,15 +78,15 @@ def copyanything(src, dst):
 def list_pkg_deps(pkgs):
     deps = []
     for pkg in pkgs:
-        if pkg.get("flow", '') == "default_cpp":
-            pkg['deps'] = ' '.join(
-                [pkg.get('deps', ''), default_cpp.dependencies])
-
         if 'git' in pkg:
             pkg['deps'] = ' '.join([pkg.get('deps', ''), 'git'])
 
         if 'deps' in pkg:
             deps += pkg['deps'].split()
+
+    if any(pkg.get("flow", '') == "default_cpp" for pkg in pkgs):
+        print('{} {}'.format(os_install_cmd(),
+                             default_cpp.dependencies[os_name()]))
 
     print('sudo apt install {}'.format(' '.join(set(deps))))
 
@@ -85,6 +115,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
 
     if pkg_names:
         pkgs = [p for p in pkgs if p['name'] in pkg_names]
+
+    filter_deps_by_os(pkgs)
 
     if list_deps:
         list_pkg_deps(pkgs)

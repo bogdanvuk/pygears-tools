@@ -1,6 +1,9 @@
 from .utils import configure, make
 
-dependencies = 'build-essential'
+dependencies = {
+    'ubuntu': 'build-essential',
+    'opensuse': '-t pattern devel_basis'
+}
 
 
 def flow(pkg):

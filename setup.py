@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pygears-tools',
-    version='0.1a7',
+    version='0.1a8',
     description='Helper scripts for installing pygears related tools',
 
     # The project's main homepage.
