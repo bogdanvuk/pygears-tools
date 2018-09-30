@@ -61,7 +61,7 @@ def os_install_cmd():
 def filter_deps_by_os(pkgs):
     name = os_name()
     for pkg in pkgs:
-        if 'deps' in pkg:
+        if ('deps' in pkg) and name in pkg['deps']:
             pkg['deps'] = pkg['deps'][name]
 
 
@@ -88,7 +88,7 @@ def list_pkg_deps(pkgs):
         print('{} {}'.format(os_install_cmd(),
                              default_cpp.dependencies[os_name()]))
 
-    print('sudo apt install {}'.format(' '.join(set(deps))))
+    print('{} install {}'.format(os_install_cmd(), ' '.join(set(deps))))
 
 
 def expand_path(path):
@@ -108,7 +108,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
         "pkgs_fn": expand_path(pkgs_fn)
     }
 
-    print('Installing to: {}'.format(cfg["tools_path"]))
+    if not list_deps:
+        print('Installing to: {}'.format(cfg["tools_path"]))
 
     with open(cfg["pkgs_fn"]) as json_data:
         pkgs = json.load(json_data)
