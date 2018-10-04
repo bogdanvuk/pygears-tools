@@ -51,9 +51,9 @@ def os_name():
 def os_install_cmd():
     name = os_name()
     if name == "ubuntu":
-        return "sudo apt install"
+        return "sudo apt install -y"
     elif name == "opensuse":
-        return "sudo zypper install"
+        return "sudo zypper --non-interactive install"
     else:
         raise "Unsupported OS"
 
@@ -88,7 +88,7 @@ def list_pkg_deps(pkgs):
         print('{} {}'.format(os_install_cmd(),
                              default_cpp.dependencies[os_name()]))
 
-    print('{} install {}'.format(os_install_cmd(), ' '.join(set(deps))))
+    print('{} {}'.format(os_install_cmd(), ' '.join(set(deps))))
 
 
 def expand_path(path):

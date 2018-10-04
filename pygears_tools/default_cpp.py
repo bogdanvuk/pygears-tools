@@ -2,7 +2,7 @@ from .utils import configure, make
 
 dependencies = {
     'ubuntu': 'build-essential',
-    'opensuse': '-t pattern devel_basis'
+    'opensuse': '-t pattern devel_C_C++'
 }
 
 
