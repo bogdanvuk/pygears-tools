@@ -66,7 +66,7 @@ def download_and_untar(pkg):
         pkg["logger"].info(
             "Source archive already available and will be reused.")
 
-    src_dir = pkg["src_root_path"].format(**pkg)
+    src_dir = pkg["src_root_path"]
     unpack = False
     if not os.path.exists(src_dir):
         unpack = True
@@ -100,7 +100,7 @@ def install_deps(pkg):
 
 def configure(pkg):
 
-    os.chdir(pkg["src_root_path"].format(**pkg))
+    os.chdir(pkg["src_root_path"])
 
     if "configure" in pkg:
         pkg["logger"].info(
@@ -113,8 +113,8 @@ def configure(pkg):
 
 
 def cmake(pkg):
-    os.chdir(pkg["src_root_path"].format(**pkg))
-    if not "cmake_cfg" in pkg:
+    os.chdir(pkg["src_root_path"])
+    if "cmake_cfg" not in pkg:
         pkg["cmake_cfg"] = ""
 
     if os.path.exists("build"):
@@ -132,7 +132,7 @@ def cmake(pkg):
 
 
 def make(pkg):
-    os.chdir(pkg["src_root_path"].format(**pkg))
+    os.chdir(pkg["src_root_path"])
 
     try:
         pkg["logger"].info("Running make. Output redirected to make.log .")
@@ -154,7 +154,7 @@ def make(pkg):
 
 
 def clone_git(pkg):
-    clone_dir = pkg["src_root_path"].format(**pkg)
+    clone_dir = pkg["src_root_path"]
     if not os.path.exists(clone_dir):
         pkg["logger"].info(
             "Cloning git repo. Output redirected to git_clone.log .")
@@ -185,7 +185,7 @@ def shell_source(script):
 
 
 def set_env(pkg):
-    if not "env" in pkg:
+    if "env" not in pkg:
         return True
 
     pkg["logger"].info("Exporting the environment variables.")
@@ -199,7 +199,7 @@ def set_env(pkg):
 
 
 def custom_run(pkg, cmd_set):
-    if not cmd_set in pkg:
+    if cmd_set not in pkg:
         return True
 
     pkg["logger"].info(

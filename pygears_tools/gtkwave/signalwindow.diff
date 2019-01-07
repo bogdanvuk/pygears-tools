@@ -1,0 +1,19 @@
+--- signalwindow.bak	2019-01-07 18:20:30.027725608 +0100
++++ signalwindow.c	2019-01-07 18:21:02.128864719 +0100
+@@ -541,6 +541,8 @@
+ gint rc = FALSE;
+ int yscroll;
+ 
++ fprintf(stderr, "KeyPress:%d,%d\n", event->state, event->keyval);
++
+ #ifdef FOCUS_DEBUG_MSGS
+ printf("focus: %d %08x %08x %08x\n", gtk_widget_has_focus(GLOBALS->signalarea_event_box),
+ 	GLOBALS->signalarea_event_box, widget, data);
+@@ -1943,6 +1945,7 @@
+ 
+ frame=gtk_frame_new("Signals");
+ gtk_container_set_border_width(GTK_CONTAINER(frame),2);
++gtk_frame_set_label(GTK_FRAME(frame), NULL);
+ 
+ gtk_container_add(GTK_CONTAINER(frame),table);
+ 

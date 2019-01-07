@@ -1,0 +1,10 @@
+--- wavewindow.bak	2019-01-07 18:10:40.688948892 +0100
++++ wavewindow.c	2019-01-07 18:12:23.237946461 +0100
+@@ -2645,6 +2645,7 @@
+ 
+ frame=gtk_frame_new("Waves");
+ gtk_container_set_border_width(GTK_CONTAINER(frame),2);
++gtk_frame_set_label(GTK_FRAME(frame), NULL);
+ 
+ gtk_container_add(GTK_CONTAINER(frame),table);
+ return(frame);

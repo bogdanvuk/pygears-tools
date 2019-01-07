@@ -1,0 +1,13 @@
+--- menu.bak	2019-01-07 18:23:36.077796980 +0100
++++ menu.c	2019-01-07 18:24:51.403981004 +0100
+@@ -7450,6 +7450,10 @@
+         }
+ 	else
+ 	{
++    if (callback_action == '0') {
++      gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_TOOLBAR]), 0);
++      gtk_window_set_decorated(GTK_WINDOW (GLOBALS->mainwindow), 0);
++    }
+ 	GLOBALS->show_toolbar = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_TOOLBAR]));
+ 	if(GLOBALS->show_toolbar)
+ 		{
