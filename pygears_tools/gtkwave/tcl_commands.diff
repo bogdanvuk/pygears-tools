@@ -1,0 +1,24 @@
+212a213,233
+> 
+> extern GtkWidget *top_table;
+> extern GtkWidget *menubar;
+> 
+> static int gtkwavetcl_stripGUI(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+> {
+>   if (GLOBALS->signalwindow) {
+>     gtk_frame_set_label(GTK_FRAME(gtk_bin_get_child(GTK_BIN(GLOBALS->signalwindow))), NULL);
+>   }
+> 
+>   if (GLOBALS->wavewindow) {
+>     gtk_frame_set_label(GTK_FRAME(GLOBALS->wavewindow), NULL);
+>   }
+> 
+> 	gtk_widget_hide(GTK_WIDGET(top_table));
+> 	gtk_widget_hide(GTK_WIDGET(menubar));
+> 
+>   char *value = "Usli smo ovde\n";
+>   return(gtkwavetcl_printString(clientData, interp, objc, objv, value));
+> }
+> 
+2180a2202
+> 	{"stripGUI",		gtkwavetcl_stripGUI},

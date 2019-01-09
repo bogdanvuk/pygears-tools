@@ -1,0 +1,14 @@
+87c87,88
+< 
+---
+> GtkWidget *top_table;
+> GtkWidget *menubar;
+670,671c671
+< GtkWidget *main_vbox = NULL, *top_table = NULL, *whole_table = NULL;
+< GtkWidget *menubar;
+---
+> GtkWidget *main_vbox = NULL, *whole_table = NULL;
+2405c2405
+< 			gtk_widget_show(menubar);
+---
+> 			/* gtk_widget_show(menubar); */
