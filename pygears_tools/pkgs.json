@@ -117,13 +117,20 @@
 		    ]
 	  },
 	  {
-		    "name": "pygears",
+		    "name": "graphviz",
+		    "url": "http://pkgs.fedoraproject.org/repo/pkgs/graphviz/graphviz-2.38.0.tar.gz/5b6a829b2ac94efcd5fa3c223ed6d3ae/graphviz-2.38.0.tar.gz",
+		    "src_root_path": "{install_path}/graphviz-2.38.0",
+        "flow": "default_cpp",
+		    "configure": "",
         "deps": {
-            "ubuntu": "graphviz",
-            "opensuse": "graphviz"
+            "ubuntu": "libpng-dev",
+            "opensuse": "libpng-devel"
         },
-		    "post_custom_run" : [
-			      "pip install pygears pydot"
+		    "env" : [
+			      "export PATH={path}/bin:$PATH",
+            "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
+            "export CPATH={path}/include:$CPATH",
+            "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
 		    ]
 	  }
 ]
