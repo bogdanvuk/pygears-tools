@@ -1,0 +1,59 @@
+62c62
+< #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (1024*1024)
+---
+> #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (16*1024*1024)
+2605a2606,2607
+>   int pass = 0;
+> 
+2667a2670,2698
+> 
+>     if (++pass == 10) {
+> 
+>       break;
+>     }
+>     /* if (++pass == 2) { */
+>     /*   Trptr t = GLOBALS->traces.first; */
+>     /*   while(t) */
+>     /*     { */
+>     /*       if(t->t_filter) { */
+>     /*         t->t_filter_converted = 0; */
+>     /*         traverse_vector_nodes(t); */
+>     /*       } */
+>     /*       if(t->t_match) */
+>     /*         { */
+>     /*           Trptr curr_trace = t; */
+>     /*           t = t->t_next; */
+>     /*           while(t && (t->t_match != curr_trace)) */
+>     /*             { */
+>     /*               t = t->t_next; */
+>     /*             } */
+>     /*         } */
+>     /*       t=GiveNextTrace(t); */
+>     /*     } */
+> 
+>     /*   break; */
+>     /* } */
+>     /* break; */
+> 
+2668a2700
+> 
+2670a2703,2721
+> 
+>  Trptr t = GLOBALS->traces.first;
+>  while(t)
+>    {
+>      if(t->t_filter) {
+>        t->t_filter_converted = 0;
+>        traverse_vector_nodes(t);
+>      }
+>      if(t->t_match)
+>        {
+>          Trptr curr_trace = t;
+>          t = t->t_next;
+>          while(t && (t->t_match != curr_trace))
+>            {
+>              t = t->t_next;
+>            }
+>        }
+>      t=GiveNextTrace(t);
+>    }

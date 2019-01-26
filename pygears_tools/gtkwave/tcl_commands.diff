@@ -1,4 +1,37 @@
-212a213,233
+31a32
+> #include "ttranslate.h"
+64,75d64
+< static int gtkwavetcl_nop(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+< {
+< (void)clientData;
+< (void)interp;
+< (void)objc;
+< (void)objv;
+< 
+< /* nothing, this is simply to call gtk's main loop */
+< gtkwave_main_iteration();
+< return(TCL_OK);
+< }
+< 
+109a99,115
+> static int gtkwavetcl_nop(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+> {
+>   (void)clientData;
+>   (void)interp;
+>   (void)objc;
+>   (void)objv;
+> 
+>   kick_partial_vcd();
+>   /* nothing, this is simply to call gtk's main loop */
+>   gtkwave_main_iteration();
+> 
+>   TimeType value = GLOBALS->max_time;
+>   return(gtkwavetcl_printTimeType(clientData, interp, objc, objv, value));
+>   /* return(TCL_OK); */
+> }
+> 
+> 
+212a219,239
 > 
 > extern GtkWidget *top_table;
 > extern GtkWidget *menubar;
@@ -20,5 +53,5 @@
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, value));
 > }
 > 
-2180a2202
+2180a2208
 > 	{"stripGUI",		gtkwavetcl_stripGUI},

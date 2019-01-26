@@ -51,7 +51,10 @@
         "pre_custom_run": [
             "patch {src_root_path}/src/tcl_commands.c < {install_script_path}/gtkwave/tcl_commands.diff",
             "patch {src_root_path}/src/signalwindow.c < {install_script_path}/gtkwave/signalwindow.diff",
-            "patch {src_root_path}/src/main.c < {install_script_path}/gtkwave/main.diff"
+            "patch {src_root_path}/src/main.c < {install_script_path}/gtkwave/main.diff",
+            "patch {src_root_path}/src/vcd_partial.c < {install_script_path}/gtkwave/vcd_partial.diff",
+            "patch {src_root_path}/src/ttranslate.h < {install_script_path}/gtkwave/ttranslate.diff",
+            "patch {src_root_path}/src/helpers/shmidcat.c < {install_script_path}/gtkwave/shmidcat.diff"
         ],
 		    "deps": {
             "ubuntu": "gperf libgtk2.0-dev tk-dev",
