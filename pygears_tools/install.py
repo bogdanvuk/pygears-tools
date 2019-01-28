@@ -154,7 +154,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
         os.chdir(pkg["tools_path"])
         os.makedirs(pkg["name"], exist_ok=True)
         os.makedirs(pkg["install_path"], exist_ok=True)
-        pkg["src_root_path"] = pkg["src_root_path"].format(**pkg)
+        if "src_root_path" in pkg:
+            pkg["src_root_path"] = pkg["src_root_path"].format(**pkg)
 
         create_logger(pkg)
 

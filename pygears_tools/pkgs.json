@@ -116,7 +116,7 @@
 	  {
 		    "name": "spacemacs_python",
 		    "post_custom_run" : [
-			      "pip install anaconda-mode autoflake epc flake8 importmagic jedi yapf"
+			      "pip install autoflake epc flake8 importmagic jedi yapf"
 		    ]
 	  },
 	  {
