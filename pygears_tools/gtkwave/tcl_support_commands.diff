@@ -1,0 +1,60 @@
+455a456,514
+> void signal_value_at(char *sig_name, char* buff) {
+> 
+>   Trptr t = NULL ;
+>   Trptr t_created = NULL;
+> 
+>   if (!(t = is_signal_displayed(sig_name)))
+>     t = t_created = sig_name_to_Trptr(sig_name) ;
+> 
+>   hptr curr = t->n.nd->head.next;
+>   while (curr->next->time < (MAX_HISTENT_TIME - 1)) {
+>     curr = curr->next;
+>   }
+>   /* if (curr) { */
+>   /*   printf("%s: %d %lu %lu %lu\n", sig_name, curr->v.h_val, curr->time, curr->next->time, MAX_HISTENT_TIME); */
+>   /* } */
+> 
+>   switch(curr->v.h_val) {
+> 	  case '0':
+>   case AN_0: strcpy(buff, "0"); break;
+> 
+> 	  case '1':
+>   case AN_1: strcpy(buff, "1"); break;
+> 
+> 	  case 'x':
+> 	  case 'X':
+>   case AN_X: strcpy(buff, "x"); break;
+> 
+> 	  case 'z':
+> 	  case 'Z':
+>   case AN_Z: strcpy(buff, "z"); break;
+> 
+> 	  case 'h':
+> 	  case 'H':
+>   case AN_H: strcpy(buff, "h"); break;
+> 
+> 	  case 'u':
+> 	  case 'U':
+>   case AN_U: strcpy(buff, "u"); break;
+> 
+> 	  case 'w':
+> 	  case 'W':
+>   case AN_W: strcpy(buff, "w"); break;
+> 
+> 	  case 'l':
+> 	  case 'L':
+>   case AN_L: strcpy(buff, "l"); break;
+> 
+> 	  case '-':
+>   case AN_DASH: strcpy(buff, "-"); break;
+> 
+>   default:      strcpy(buff, "?"); break;
+> 	  }
+> 
+>   if(t_created)
+>     {
+>       FreeTrace(t_created);
+>     }
+> }
+> 

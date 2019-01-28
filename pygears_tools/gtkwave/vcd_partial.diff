@@ -5,12 +5,13 @@
 2605a2606,2607
 >   int pass = 0;
 > 
-2667a2670,2698
+2667a2670,2699
 > 
 >     if (++pass == 10) {
 > 
 >       break;
 >     }
+> 
 >     /* if (++pass == 2) { */
 >     /*   Trptr t = GLOBALS->traces.first; */
 >     /*   while(t) */
@@ -35,9 +36,9 @@
 >     /* } */
 >     /* break; */
 > 
-2668a2700
+2668a2701
 > 
-2670a2703,2721
+2670a2704,2722
 > 
 >  Trptr t = GLOBALS->traces.first;
 >  while(t)
