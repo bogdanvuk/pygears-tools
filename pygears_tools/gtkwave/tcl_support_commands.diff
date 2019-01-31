@@ -1,5 +1,5 @@
-455a456,514
-> void signal_value_at(char *sig_name, char* buff) {
+455a456,520
+> void signal_value_at(char *sig_name, char* buff, TimeType time) {
 > 
 >   Trptr t = NULL ;
 >   Trptr t_created = NULL;
@@ -7,12 +7,18 @@
 >   if (!(t = is_signal_displayed(sig_name)))
 >     t = t_created = sig_name_to_Trptr(sig_name) ;
 > 
->   hptr curr = t->n.nd->head.next;
->   while (curr->next->time < (MAX_HISTENT_TIME - 1)) {
->     curr = curr->next;
+>   hptr curr;
+>   if (time == (MAX_HISTENT_TIME - 1)) {
+>     curr = t->n.nd->curr;
+>   } else {
+>     curr = t->n.nd->head.next->next;
+>     while (curr->next->time <= time) {
+>       curr = curr->next;
+>     }
 >   }
+> 
 >   /* if (curr) { */
->   /*   printf("%s: %d %lu %lu %lu\n", sig_name, curr->v.h_val, curr->time, curr->next->time, MAX_HISTENT_TIME); */
+>   /*   printf("%s: %d %lu %lu\n", sig_name, curr->v.h_val, curr->time, curr->next->time); */
 >   /* } */
 > 
 >   switch(curr->v.h_val) {

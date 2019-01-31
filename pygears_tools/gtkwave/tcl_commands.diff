@@ -53,18 +53,24 @@
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, value));
 > }
 > 
-1533a1561,1570
+1533a1561,1576
 > static int gtkwavetcl_signalValueAt(ClientData clientData, Tcl_Interp *interp,
 >                                     int objc, Tcl_Obj *CONST objv[]) {
 >   char *sig_name = NULL ;
 >   char val[2];
+>   TimeType time;
 > 
 >   sig_name = get_Tcl_string(objv[1]);
->   signal_value_at(sig_name, val);
+>   if (objc == 2) {
+>     time = MAX_HISTENT_TIME - 1;
+>   } else {
+>     time = atoi_64(get_Tcl_string(objv[2]));
+>   }
+>   signal_value_at(sig_name, val, time);
 > 
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
-2180a2218
+2180a2224
 > 	{"stripGUI",		gtkwavetcl_stripGUI},
-2181a2220
+2181a2226
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
