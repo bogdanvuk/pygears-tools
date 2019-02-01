@@ -53,7 +53,16 @@
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, value));
 > }
 > 
-1533a1561,1576
+1533a1561,1585
+> #include <gdk/gdkx.h>
+> static int gtkwavetcl_getGtkWindowID(ClientData clientData, Tcl_Interp *interp,
+>                                     int objc, Tcl_Obj *CONST objv[]) {
+>   Window root = GDK_WINDOW_XID(GTK_WIDGET(GLOBALS->mainwindow)->window);
+>   char win_id[16];
+>   sprintf(win_id, "%lu", root);
+>   return(gtkwavetcl_printString(clientData, interp, objc, objv, win_id));
+> }
+> 
 > static int gtkwavetcl_signalValueAt(ClientData clientData, Tcl_Interp *interp,
 >                                     int objc, Tcl_Obj *CONST objv[]) {
 >   char *sig_name = NULL ;
@@ -70,7 +79,8 @@
 > 
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
-2180a2224
+2180a2233
 > 	{"stripGUI",		gtkwavetcl_stripGUI},
-2181a2226
+2181a2235,2236
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
+> 	{"getGtkWindowID",                    gtkwavetcl_getGtkWindowID},

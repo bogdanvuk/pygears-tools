@@ -1,5 +1,5 @@
 543a544,545
->  fprintf(stderr, "KeyPress:%d,%d\n", event->state, event->keyval);
+>  fprintf(stderr, "$$KeyPress:%d,%d\n", event->state, event->keyval);
 > 
 1945a1948
 > /* gtk_frame_set_label(GTK_FRAME(frame), NULL); */

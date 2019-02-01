@@ -14,4 +14,6 @@ diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/main.c /tools/gtkwave/
 
 diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/signalwindow.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/signalwindow.c > signalwindow.diff
 
+diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/currenttime.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/currenttime.c > currenttime.diff
+
 diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/helpers/shmidcat.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/helpers/shmidcat.c > shmidcat.diff
