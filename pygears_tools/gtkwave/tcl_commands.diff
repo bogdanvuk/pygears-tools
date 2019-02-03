@@ -31,13 +31,14 @@
 > }
 > 
 > 
-212a219,239
+212a219,244
 > 
 > extern GtkWidget *top_table;
 > extern GtkWidget *menubar;
 > 
-> static int gtkwavetcl_stripGUI(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
+> static int gtkwavetcl_toggleStripGUI(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 > {
+> 
 >   if (GLOBALS->signalwindow) {
 >     gtk_frame_set_label(GTK_FRAME(gtk_bin_get_child(GTK_BIN(GLOBALS->signalwindow))), NULL);
 >   }
@@ -46,17 +47,38 @@
 >     gtk_frame_set_label(GTK_FRAME(GLOBALS->wavewindow), NULL);
 >   }
 > 
-> 	gtk_widget_hide(GTK_WIDGET(top_table));
-> 	gtk_widget_hide(GTK_WIDGET(menubar));
+>   if (gtk_widget_get_visible(GTK_WIDGET(top_table))) {
+>       gtk_widget_hide(GTK_WIDGET(top_table));
+>       gtk_widget_hide(GTK_WIDGET(menubar));
+>   } else {
+>     gtk_widget_show(GTK_WIDGET(top_table));
+>     gtk_widget_show(GTK_WIDGET(menubar));
+>   }
 > 
->   char *value = "Usli smo ovde\n";
->   return(gtkwavetcl_printString(clientData, interp, objc, objv, value));
+>   return(TCL_OK);
 > }
 > 
-1533a1561,1585
+1534a1567,1609
+> static gint pygears_keypress_handler(GtkWidget *widget, GdkEventKey *event, gpointer data)
+> {
+>   printf("$$KeyPress:%d,%d\n", event->state, event->keyval);
+>   return FALSE;
+> }
+> 
+> gint install_pygears_keypress_handler(void)
+> {
+>   gint rc =
+>     g_signal_connect(XXX_GTK_OBJECT(GLOBALS->mainwindow),
+>                      "key_press_event",G_CALLBACK(pygears_keypress_handler), NULL);
+> 
+>   return(rc);
+> }
+> 
 > #include <gdk/gdkx.h>
 > static int gtkwavetcl_getGtkWindowID(ClientData clientData, Tcl_Interp *interp,
 >                                     int objc, Tcl_Obj *CONST objv[]) {
+> 
+>   /* install_pygears_keypress_handler(); */
 >   Window root = GDK_WINDOW_XID(GTK_WIDGET(GLOBALS->mainwindow)->window);
 >   char win_id[16];
 >   sprintf(win_id, "%lu", root);
@@ -79,8 +101,9 @@
 > 
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
-2180a2233
-> 	{"stripGUI",		gtkwavetcl_stripGUI},
-2181a2235,2236
+> 
+2180a2256
+> 	{"toggleStripGUI",		gtkwavetcl_toggleStripGUI},
+2181a2258,2259
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
 > 	{"getGtkWindowID",                    gtkwavetcl_getGtkWindowID},

@@ -52,7 +52,6 @@
             "patch {src_root_path}/src/tcl_commands.c < {install_script_path}/gtkwave/tcl_commands.diff",
             "patch {src_root_path}/src/tcl_support_commands.c < {install_script_path}/gtkwave/tcl_support_commands.diff",
             "patch {src_root_path}/src/tcl_support_commands.h < {install_script_path}/gtkwave/tcl_support_commands_h.diff",
-            "patch {src_root_path}/src/signalwindow.c < {install_script_path}/gtkwave/signalwindow.diff",
             "patch {src_root_path}/src/main.c < {install_script_path}/gtkwave/main.diff",
             "patch {src_root_path}/src/vcd_partial.c < {install_script_path}/gtkwave/vcd_partial.diff",
             "patch {src_root_path}/src/ttranslate.h < {install_script_path}/gtkwave/ttranslate.diff",

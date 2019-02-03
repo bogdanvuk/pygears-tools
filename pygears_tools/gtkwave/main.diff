@@ -12,13 +12,21 @@
 < 			gtk_widget_show(menubar);
 ---
 > 			/* gtk_widget_show(menubar); */
-2993,2996c2993,2996
+2991,2996c2991,2996
+< if(is_interactive)
+< 	{
 < 	for(;;) { kick_partial_vcd(); }
 < 	}
 < 	else
 < 	{
 ---
+> /* if(is_interactive) */
+> /* 	{ */
 > 	/* for(;;) { kick_partial_vcd(); } */
 > 	/* } */
 > 	/* else */
 > 	/* { */
+3015c3015
+< 	}
+---
+> 	/* } */
