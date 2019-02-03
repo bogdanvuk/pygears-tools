@@ -190,16 +190,25 @@
 >   }
 > }
 > 
-2605a2793,2794
+2605a2793,2795
 >   int pass = 0;
 > 
-2633a2823,2849
+>   int old_maxtime_marker_conflict;
+2608d2797
+< 		int old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
+2609a2799
+>       old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
+2632c2822,2861
+< 		vcd_partial_mark_and_sweep(1);
+---
+> 
 >  Trptr t = GLOBALS->traces.first;
 >  while(t)
 >    {
 >      if(t->t_filter) {
 > 
 >        /* printf("================================================"); */
+> 
 >        append_to_trace_vector(t);
 > 
 >        /* printf("------------------------------------------------"); */
@@ -221,26 +230,37 @@
 >      t=GiveNextTrace(t);
 >    }
 > 
-2667a2884,2892
-> 
->     if (++pass == 10) {
-> 
+>  if (++pass == 10) {
 >     /*   /\* MaxSignalLength(); *\/ */
 >     /*   /\* signalarea_configure_event(GLOBALS->signalarea, NULL); *\/ */
 >     /*   /\* wavearea_configure_event(GLOBALS->wavearea, NULL); *\/ */
 > 
 >       break;
 >     }
-2669d2893
-< 	}
-2670a2895
-> 	}
-2672d2896
+> 		}
+> 
+>     old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
+>     vcd_partial_mark_and_sweep(1);
+2668c2897
+< 		}
+---
+> 
+2672d2900
 < gtkwave_main_iteration();
-2710,2711c2934,2936
+2698a2927
+> 
+2710,2711c2939,2942
 < /* vector */
 < t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_mark(t, mandclear); t = t->t_next; }
 ---
+> 
 > /* /\* vector *\/ */
 > t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_mark(t, mandclear); t = t->t_next; }
+> 
+2714c2945,2946
+< t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_sweep(t); t = t->t_next; }
+---
+>  t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_sweep(t); t = t->t_next; }
+> 
+2715a2948
 > 
