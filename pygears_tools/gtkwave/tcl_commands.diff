@@ -58,7 +58,7 @@
 >   return(TCL_OK);
 > }
 > 
-1534a1567,1609
+1534a1567,1625
 > static gint pygears_keypress_handler(GtkWidget *widget, GdkEventKey *event, gpointer data)
 > {
 >   printf("$$KeyPress:%d,%d\n", event->state, event->keyval);
@@ -74,11 +74,27 @@
 >   return(rc);
 > }
 > 
+> static gint pygears_keyrelease_handler(GtkWidget *widget, GdkEventKey *event, gpointer data)
+> {
+>   printf("$$KeyRelease:%d,%d\n", event->state, event->keyval);
+>   return FALSE;
+> }
+> 
+> gint install_pygears_keyrelease_handler(void)
+> {
+>   gint rc =
+>     g_signal_connect(XXX_GTK_OBJECT(GLOBALS->mainwindow),
+>                      "key_release_event",G_CALLBACK(pygears_keyrelease_handler), NULL);
+> 
+>   return(rc);
+> }
+> 
 > #include <gdk/gdkx.h>
 > static int gtkwavetcl_getGtkWindowID(ClientData clientData, Tcl_Interp *interp,
 >                                     int objc, Tcl_Obj *CONST objv[]) {
 > 
->   /* install_pygears_keypress_handler(); */
+>   install_pygears_keypress_handler();
+>   install_pygears_keyrelease_handler();
 >   Window root = GDK_WINDOW_XID(GTK_WIDGET(GLOBALS->mainwindow)->window);
 >   char win_id[16];
 >   sprintf(win_id, "%lu", root);
@@ -102,8 +118,8 @@
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
 > 
-2180a2256
+2180a2272
 > 	{"toggleStripGUI",		gtkwavetcl_toggleStripGUI},
-2181a2258,2259
+2181a2274,2275
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
 > 	{"getGtkWindowID",                    gtkwavetcl_getGtkWindowID},
