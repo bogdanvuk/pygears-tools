@@ -2,7 +2,7 @@
 < #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (1024*1024)
 ---
 > #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (16*1024*1024)
-2590a2591,2777
+2590a2591,2784
 > vptr make_new_vect_node(vptr curr, TimeType time, const char* val) {
 >   curr->next = calloc_2(1, sizeof(struct VectorEnt) + strlen(val) + 1);
 >   strcpy((char *)curr->next->v, val);
@@ -29,6 +29,8 @@
 > int floor_to_step(int x, int step) {
 >   return (x / step) * step;
 > }
+> 
+> #define TR_REALLOCATED 		(UINT64_C(1)<<40)
 > 
 > void append_to_trace_vector(Trptr t) {
 >   if (GLOBALS->max_time == 0) {
@@ -166,10 +168,12 @@
 > 
 >   int regions = t->n.vec->numregions + i;
 >   bvptr bv;
->   if ((t->n.vec->numregions <= 5) || (ceil_log2(t->n.vec->numregions) < ceil_log2(regions))) {
+>   /* if ((t->n.vec->numregions <= 5) || (ceil_log2(t->n.vec->numregions) < ceil_log2(regions))) { */
+>   if ((!(t->flags & TR_REALLOCATED)) || (ceil_log2(t->n.vec->numregions) < ceil_log2(regions))) {
 >     /* printf("Realocatting (%d => %d) > %d\n", t->n.vec->numregions, regions, 1 << ceil_log2(regions)); */
->     bv = calloc_2(1, sizeof(struct BitVector) + (sizeof(vptr) * (1 << ceil_log2(regions))));
+>     bv = calloc_2(1, sizeof(struct BitVector) + (sizeof(vptr) * (1 << (ceil_log2(regions)+1))));
 >     memcpy(bv, t->n.vec, sizeof(struct BitVector) + (sizeof(vptr) * (t->n.vec->numregions)));
+>     t->flags |= TR_REALLOCATED;
 >   } else {
 >     /* printf("Reusing (%d => %d)\n", t->n.vec->numregions, regions); */
 >     bv = t->n.vec;
@@ -177,11 +181,14 @@
 > 
 >   vptr vt = last_vect->next;
 > 
+>   /* printf("Adding to chain: "); */
 >   for(i=t->n.vec->numregions-end_guard_len;i<regions;i++)
 >     {
+>       /* printf("%d, ", i); */
 >       bv->vectors[i] = vt;
 >       vt = vt->next;
 >     }
+>   /* printf("\n"); */
 > 
 >   bv->numregions = regions;
 >   if (t->n.vec != bv) {
@@ -190,15 +197,15 @@
 >   }
 > }
 > 
-2605a2793,2795
+2605a2800,2802
 >   int pass = 0;
 > 
 >   int old_maxtime_marker_conflict;
-2608d2797
+2608d2804
 < 		int old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
-2609a2799
+2609a2806
 >       old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
-2632c2822,2861
+2632c2829,2868
 < 		vcd_partial_mark_and_sweep(1);
 ---
 > 
@@ -241,15 +248,15 @@
 > 
 >     old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
 >     vcd_partial_mark_and_sweep(1);
-2668c2897
+2668c2904
 < 		}
 ---
 > 
-2672d2900
+2672d2907
 < gtkwave_main_iteration();
-2698a2927
+2698a2934
 > 
-2710,2711c2939,2942
+2710,2711c2946,2949
 < /* vector */
 < t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_mark(t, mandclear); t = t->t_next; }
 ---
@@ -257,10 +264,10 @@
 > /* /\* vector *\/ */
 > t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_mark(t, mandclear); t = t->t_next; }
 > 
-2714c2945,2946
+2714c2952,2953
 < t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_sweep(t); t = t->t_next; }
 ---
 >  t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_sweep(t); t = t->t_next; }
 > 
-2715a2948
+2715a2955
 > 

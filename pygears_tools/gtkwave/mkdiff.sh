@@ -12,6 +12,6 @@ diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/ttranslate.h /tools/gt
 
 diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/main.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/main.c > main.diff
 
-diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/currenttime.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/currenttime.c > currenttime.diff
+diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/wavewindow.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/wavewindow.c > wavewindow.diff
 
 diff /tools/gtkwave/_install/gtkwave-gtk3-3.3.98_orig/src/helpers/shmidcat.c /tools/gtkwave/_install/gtkwave-gtk3-3.3.98/src/helpers/shmidcat.c > shmidcat.diff

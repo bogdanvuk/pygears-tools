@@ -1,0 +1,4 @@
+1601a1602,1604
+> 
+>   fprintf(stderr, "$$SetMarker:%lu\n", GLOBALS->tims.marker);
+> 
