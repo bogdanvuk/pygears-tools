@@ -75,6 +75,16 @@ def copyanything(src, dst):
             raise
 
 
+def get_pkg_classes(pkgs):
+    classes = set()
+
+    for pkg in pkgs:
+        if 'class' in pkg:
+            classes.update(pkg['class'])
+
+    return classes
+
+
 def list_pkg_deps(pkgs):
     deps = []
     for pkg in pkgs:
@@ -115,7 +125,11 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
         pkgs = json.load(json_data)
 
     if pkg_names:
-        pkgs = [p for p in pkgs if p['name'] in pkg_names]
+        pkgs = [
+            p for p in pkgs
+            if (p['name'] in pkg_names or any(cls in pkg_names
+                                              for cls in p['class']))
+        ]
 
     filter_deps_by_os(pkgs)
 
@@ -230,7 +244,10 @@ def get_argparser():
         help="Directory to install tools to")
 
     parser.add_argument(
-        '-w', dest='home_path', default="~", help="Directory to setup home in")
+        '-w',
+        dest='home_path',
+        default=os.path.expanduser("~"),
+        help="Directory to setup home in")
 
     parser.add_argument(
         '-l',
@@ -248,6 +265,7 @@ def get_argparser():
         'pkg_names',
         metavar='pkg_names',
         nargs='*',
+        default=['gui'],
         help=
         'Names of packages to install. Can be one of: emacs, spacemacs, gtkwave, verilator, systemc, scv, pyenv, python, ripgrep, spacemacs_python, pygears'
     )

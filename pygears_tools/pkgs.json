@@ -1,6 +1,7 @@
 [
     {
         "name": "emacs",
+        "class": ["all", "dev"],
         "flow": "default_cpp",
         "url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.1.tar.gz",
         "src_root_path": "{install_path}/emacs-26.1",
@@ -15,6 +16,7 @@
     },
 	  {
 		    "name": "spacemacs",
+        "class": ["all", "dev"],
 		    "git": "https://github.com/syl20bnr/spacemacs.git",
 		    "src_root_path": "{home_path}/.emacs.d",
 		    "copy": [
@@ -26,6 +28,7 @@
 	  },
     {
 		    "name": "verilator",
+        "class": ["all", "dev", "gui", "min"],
 		    "flow": "default_cpp",
 		    "url": "https://www.veripool.org/ftp/verilator-3.926.tgz",
 		    "src_root_path": "{install_path}/verilator-3.926",
@@ -46,6 +49,7 @@
     },
     {
 		    "name": "gtkwave",
+        "class": ["all", "dev", "gui"],
 		    "flow": "default_cpp",
 		    "url": "http://gtkwave.sourceforge.net/gtkwave-gtk3-3.3.98.tar.gz",
         "pre_custom_run": [
@@ -70,6 +74,7 @@
     },
     {
 		    "name": "systemc",
+        "class": ["all", "dev"],
 		    "flow": "default_cpp",
 		    "url": "http://accellera.org/images/downloads/standards/systemc/systemc-2.3.2.tar.gz",
 		    "src_root_path": "{install_path}/systemc-2.3.2",
@@ -83,6 +88,7 @@
     },
     {
 		    "name": "scv",
+        "class": ["all", "dev"],
 		    "flow": "default_cpp",
 		    "url": "http://www.accellera.org/images/downloads/standards/systemc/scv-2.0.1.tar.gz",
 		    "src_root_path": "{install_path}/scv-2.0.1",
@@ -95,6 +101,7 @@
     },
 	  {
 		    "name": "pyenv",
+        "class": ["all", "dev", "gui", "min"],
 		    "git": "https://github.com/pyenv/pyenv.git",
 		    "src_root_path": "{home_path}/.pyenv",
         "deps": {
@@ -110,19 +117,27 @@
 	  },
 	  {
 		    "name": "python",
+        "class": ["all", "dev", "gui", "min"],
 		    "post_custom_run" : [
 			      "pyenv install -s 3.6.6",
 			      "pyenv global 3.6.6"
 		    ]
 	  },
+    {
+		    "name": "pygears",
+        "class": ["all", "dev", "gui", "min"],
+		    "post_custom_run" : ["pip install pygears"]
+    },
 	  {
 		    "name": "spacemacs_python",
+        "class": ["all", "dev"],
 		    "post_custom_run" : [
 			      "pip install autoflake epc flake8 importmagic jedi yapf"
 		    ]
 	  },
 	  {
 		    "name": "graphviz",
+        "class": ["all", "dev", "gui"],
 		    "url": "http://pkgs.fedoraproject.org/repo/pkgs/graphviz/graphviz-2.38.0.tar.gz/5b6a829b2ac94efcd5fa3c223ed6d3ae/graphviz-2.38.0.tar.gz",
 		    "src_root_path": "{install_path}/graphviz-2.38.0",
         "flow": "default_cpp",
@@ -136,6 +151,13 @@
             "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
             "export CPATH={path}/include:$CPATH",
             "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
+		    ]
+	  },
+	  {
+		    "name": "gearbox",
+        "class": ["all", "dev", "gui"],
+		    "post_custom_run" : [
+			      "pip install pygears-gearbox"
 		    ]
 	  }
 ]
