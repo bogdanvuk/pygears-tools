@@ -2,7 +2,9 @@
 < #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (1024*1024)
 ---
 > #define WAVE_PARTIAL_VCD_RING_BUFFER_SIZE (16*1024*1024)
-2590a2591,2784
+1011d1010
+< 
+2590a2590,2788
 > vptr make_new_vect_node(vptr curr, TimeType time, const char* val) {
 >   curr->next = calloc_2(1, sizeof(struct VectorEnt) + strlen(val) + 1);
 >   strcpy((char *)curr->next->v, val);
@@ -197,66 +199,91 @@
 >   }
 > }
 > 
-2605a2800,2802
+> void vcd_parse_partial(void)
+> {
+>   vcd_parse();
+> }
+> 
+2605a2804,2806
 >   int pass = 0;
 > 
 >   int old_maxtime_marker_conflict;
-2608d2804
+2608d2808
 < 		int old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
-2609a2806
+2609a2810
 >       old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
-2632c2829,2868
+2632c2833,2892
 < 		vcd_partial_mark_and_sweep(1);
 ---
 > 
->  Trptr t = GLOBALS->traces.first;
->  while(t)
->    {
->      if(t->t_filter) {
+>  /* Trptr t = GLOBALS->traces.first; */
+>  /* while(t) */
+>  /*   { */
+>  /*     if(t->t_filter) { */
 > 
->        /* printf("================================================"); */
+>  /*       /\* printf("================================================"); *\/ */
 > 
->        append_to_trace_vector(t);
+>  /*       append_to_trace_vector(t); */
 > 
->        /* printf("------------------------------------------------"); */
+>  /*       /\* printf("------------------------------------------------"); *\/ */
 > 
->        /* for(int i=0;i<t->n.vec->numregions;i++) */
->        /*   { */
->        /*     printf("%lu: %s, %d\n", t->n.vec->vectors[i]->time, t->n.vec->vectors[i]->v, t->n.vec->vectors[i]->v[0]); */
->        /*   } */
->      }
->      if(t->t_match)
->        {
->          Trptr curr_trace = t;
->          t = t->t_next;
->          while(t && (t->t_match != curr_trace))
->            {
->              t = t->t_next;
->            }
->        }
->      t=GiveNextTrace(t);
->    }
+>  /*       /\* for(int i=0;i<t->n.vec->numregions;i++) *\/ */
+>  /*       /\*   { *\/ */
+>  /*       /\*     printf("%lu: %s, %d\n", t->n.vec->vectors[i]->time, t->n.vec->vectors[i]->v, t->n.vec->vectors[i]->v[0]); *\/ */
+>  /*       /\*   } *\/ */
+>  /*     } */
+>  /*     if(t->t_match) */
+>  /*       { */
+>  /*         Trptr curr_trace = t; */
+>  /*         t = t->t_next; */
+>  /*         while(t && (t->t_match != curr_trace)) */
+>  /*           { */
+>  /*             t = t->t_next; */
+>  /*           } */
+>  /*       } */
+>  /*     t=GiveNextTrace(t); */
+>  /*   } */
 > 
->  if (++pass == 10) {
->     /*   /\* MaxSignalLength(); *\/ */
->     /*   /\* signalarea_configure_event(GLOBALS->signalarea, NULL); *\/ */
->     /*   /\* wavearea_configure_event(GLOBALS->wavearea, NULL); *\/ */
+>     ++pass;
+>  /* if (++pass == 10) { */
+>  /*    /\*   /\\* MaxSignalLength(); *\\/ *\/ */
+>  /*    /\*   /\\* signalarea_configure_event(GLOBALS->signalarea, NULL); *\\/ *\/ */
+>  /*    /\*   /\\* wavearea_configure_event(GLOBALS->wavearea, NULL); *\\/ *\/ */
 > 
->       break;
->     }
+>  /*      break; */
+>  /*    } */
 > 		}
+> 
+>   /* printf("Pass = %d\n", pass); */
+>   Trptr t = GLOBALS->traces.first;
+>   while(t)
+>     {
+>       if(t->t_filter) {
+>         append_to_trace_vector(t);
+>       }
+>       if(t->t_match)
+>         {
+>           Trptr curr_trace = t;
+>           t = t->t_next;
+>           while(t && (t->t_match != curr_trace))
+>             {
+>               t = t->t_next;
+>             }
+>         }
+>       t=GiveNextTrace(t);
+>     }
 > 
 >     old_maxtime_marker_conflict = (GLOBALS->tims.marker > GLOBALS->max_time);
 >     vcd_partial_mark_and_sweep(1);
-2668c2904
+2668c2928
 < 		}
 ---
 > 
-2672d2907
+2672d2931
 < gtkwave_main_iteration();
-2698a2934
+2698a2958
 > 
-2710,2711c2946,2949
+2710,2711c2970,2973
 < /* vector */
 < t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_mark(t, mandclear); t = t->t_next; }
 ---
@@ -264,10 +291,10 @@
 > /* /\* vector *\/ */
 > t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_mark(t, mandclear); t = t->t_next; }
 > 
-2714c2952,2953
+2714c2976,2977
 < t = GLOBALS->traces.first; while(t) { if(t->vector) regen_trace_sweep(t); t = t->t_next; }
 ---
 >  t = GLOBALS->traces.first; while(t) { if(t->vector && (!t->t_filter)) regen_trace_sweep(t); t = t->t_next; }
 > 
-2715a2955
+2715a2979
 > 

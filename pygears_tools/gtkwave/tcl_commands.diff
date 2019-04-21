@@ -13,7 +13,7 @@
 < return(TCL_OK);
 < }
 < 
-109a99,115
+109a99,116
 > static int gtkwavetcl_nop(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 > {
 >   (void)clientData;
@@ -21,6 +21,7 @@
 >   (void)objc;
 >   (void)objv;
 > 
+>   /* vcd_parse_partial(); */
 >   kick_partial_vcd();
 >   /* nothing, this is simply to call gtk's main loop */
 >   gtkwave_main_iteration();
@@ -31,7 +32,7 @@
 > }
 > 
 > 
-212a219,244
+212a220,245
 > 
 > extern GtkWidget *top_table;
 > extern GtkWidget *menubar;
@@ -58,7 +59,7 @@
 >   return(TCL_OK);
 > }
 > 
-1534a1567,1625
+1534a1568,1626
 > static gint pygears_keypress_handler(GtkWidget *widget, GdkEventKey *event, gpointer data)
 > {
 >   printf("$$KeyPress:%d,%d\n", event->state, event->keyval);
@@ -118,8 +119,8 @@
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
 > 
-2180a2272
+2180a2273
 > 	{"toggleStripGUI",		gtkwavetcl_toggleStripGUI},
-2181a2274,2275
+2181a2275,2276
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
 > 	{"getGtkWindowID",                    gtkwavetcl_getGtkWindowID},
