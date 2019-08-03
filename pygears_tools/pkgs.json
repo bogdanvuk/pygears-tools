@@ -159,5 +159,18 @@
 		    "post_custom_run" : [
 			      "pip install pygears-gearbox"
 		    ]
+	  },
+	  {
+		    "name": "ngspice",
+        "class": ["all", "control"],
+		    "url": "https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/30/ngspice-30.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fngspice%2Ffiles%2Flatest%2Fdownload&ts=1564825525",
+		    "src_root_path": "{install_path}/ngspice-30",
+        "flow": "default_cpp",
+		    "configure": "--with-ngshared --enable-openmp --enable-xspice",
+		    "env" : [
+			      "export PATH={path}/bin:$PATH",
+            "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
+            "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
+		    ]
 	  }
 ]
