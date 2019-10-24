@@ -30,8 +30,8 @@
 		    "name": "verilator",
         "class": ["all", "dev", "gui", "min"],
 		    "flow": "default_cpp",
-		    "url": "https://www.veripool.org/ftp/verilator-4.012.tgz",
-		    "src_root_path": "{install_path}/verilator-4.012",
+		    "url": "https://www.veripool.org/ftp/verilator-4.020.tgz",
+		    "src_root_path": "{install_path}/verilator-4.020",
         "pre_custom_run": ["export VERILATOR_ROOT={path}"],
         "post_custom_run": [
             "cp -r {path}/share/verilator/include {path}",
@@ -119,8 +119,8 @@
 		    "name": "python",
         "class": ["all", "dev", "gui", "min"],
 		    "post_custom_run" : [
-			      "pyenv install -s 3.6.6",
-			      "pyenv global 3.6.6"
+			      "pyenv install -s 3.7.5",
+			      "pyenv global 3.7.5"
 		    ]
 	  },
     {
