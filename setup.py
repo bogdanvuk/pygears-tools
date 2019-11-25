@@ -17,7 +17,7 @@ setup(
     license='MIT',
 
     packages=find_packages(exclude=['examples*', 'docs']),
-    package_data={'': ['*.json', '.spacemacs']},
+    package_data={'': ['*.json', '.spacemacs', '*.diff']},
     include_package_data=True,
     entry_points={
         'console_scripts': [
