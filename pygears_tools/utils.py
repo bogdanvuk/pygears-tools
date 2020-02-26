@@ -136,7 +136,7 @@ def make(pkg):
 
     try:
         pkg["logger"].info("Running make. Output redirected to make.log .")
-        subprocess.check_output("make -j8 > ../make.log 2>&1", shell=True)
+        subprocess.check_output("make > ../make.log 2>&1", shell=True)
     except subprocess.CalledProcessError:
         pkg["logger"].error(
             "Make finished with error, please check the log.")
