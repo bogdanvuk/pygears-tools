@@ -1,3 +1,4 @@
+import configparser
 import urllib.request
 import tarfile
 import io
@@ -5,6 +6,18 @@ import sys
 import subprocess
 import os
 import shutil
+
+
+def os_name():
+    with open('/etc/os-release') as f:
+        file_content = '[root]\n' + f.read()
+
+    os_cfg = configparser.RawConfigParser()
+    os_cfg.read_string(file_content)
+
+    name = os_cfg['root']['NAME'].strip('"').split()[0].lower()
+
+    return name
 
 
 def get_url_archive_file_name(pkg):
@@ -24,8 +37,7 @@ def download_source(pkg):
         sys.stdout.flush()
 
     pkg["logger"].info("Downloading " + pkg["url"])
-    urllib.request.urlretrieve(pkg["url"], get_url_archive_path(pkg),
-                               dlProgress)
+    urllib.request.urlretrieve(pkg["url"], get_url_archive_path(pkg), dlProgress)
     sys.stdout.write("\n")
     return fn
 
@@ -51,8 +63,7 @@ class ProgressFileObject(io.FileIO):
 
 def untar(pkg):
     pkg["logger"].info("Unpacking " + get_url_archive_file_name(pkg))
-    tar = tarfile.open(
-        fileobj=ProgressFileObject(get_url_archive_path(pkg), pkg))
+    tar = tarfile.open(fileobj=ProgressFileObject(get_url_archive_path(pkg), pkg))
     tar.extractall("_install")
     tar.close()
     sys.stdout.write("\n")
@@ -63,8 +74,7 @@ def download_and_untar(pkg):
     if not os.path.exists(fn):
         download_source(pkg)
     else:
-        pkg["logger"].info(
-            "Source archive already available and will be reused.")
+        pkg["logger"].info("Source archive already available and will be reused.")
 
     src_dir = pkg["src_root_path"]
     unpack = False
@@ -85,17 +95,31 @@ def download_and_untar(pkg):
         pkg["logger"].info("Sources already present and up to date.")
 
 
-def install_deps(pkg):
-    if "deps" not in pkg:
-        return True
+def list_pkg_deps(pkgs):
+    deps = []
+    for pkg in pkgs:
+        if 'git' in pkg:
+            pkg['deps'] = ' '.join([pkg.get('deps', ''), 'git'])
 
-    pkg["logger"].info(
-        "Installing dependencies. Output redirected to dependencies.log .")
-    subprocess.run(
-        "sudo apt install -y " + pkg["deps"] + " > " + os.path.join(
-            pkg["path"], "_install", "dependencies.log") + " 2>&1",
-        shell=True,
-        check=True)
+        if 'deps' in pkg:
+            deps += pkg['deps'].split()
+
+    resp = [set(deps)]
+    if any(pkg.get("flow", '') == "default_cpp" for pkg in pkgs):
+        from pygears_tools import default_cpp
+        resp.insert(0, [default_cpp.dependencies[os_name()]])
+
+    return resp
+
+
+def install_deps(pkgs):
+    print("Installing dependencies")
+    deps = list_pkg_deps(pkgs)
+
+    for d in deps:
+        cmd = "sudo apt install -y " + ' '.join(d)
+        print(cmd)
+        subprocess.run(cmd, shell=True, check=True)
 
 
 def configure(pkg):
@@ -103,12 +127,10 @@ def configure(pkg):
     os.chdir(pkg["src_root_path"])
 
     if "configure" in pkg:
-        pkg["logger"].info(
-            "Running auto configure. Output redirected to configure.log .")
-        subprocess.check_output(
-            "./configure --prefix=" + pkg["path"] + " " + pkg["configure"] +
-            " > ../configure.log 2>&1",
-            shell=True)
+        pkg["logger"].info("Running auto configure. Output redirected to configure.log .")
+        subprocess.check_output("./configure --prefix=" + pkg["path"] + " " + pkg["configure"] +
+                                " > ../configure.log 2>&1",
+                                shell=True)
     os.chdir(pkg["path"])
 
 
@@ -124,8 +146,8 @@ def cmake(pkg):
     os.chdir("build")
     pkg["logger"].info("Running CMake. Output redirected to cmake.log .")
     subprocess.check_output(
-        "cmake -DCMAKE_INSTALL_PREFIX:PATH={} {} .. > ../../cmake.log 2>&1".
-        format(pkg["path"], pkg["cmake_cfg"]),
+        "cmake -DCMAKE_INSTALL_PREFIX:PATH={} {} .. > ../../cmake.log 2>&1".format(
+            pkg["path"], pkg["cmake_cfg"]),
         shell=True)
     pkg["src_root_path"] = os.getcwd()
     os.chdir(pkg["path"])
@@ -136,19 +158,15 @@ def make(pkg):
 
     try:
         pkg["logger"].info("Running make. Output redirected to make.log .")
-        subprocess.check_output("make -j8 > ../make.log 2>&1", shell=True)
+        subprocess.check_output("make -j > ../make.log 2>&1", shell=True)
     except subprocess.CalledProcessError:
-        pkg["logger"].error(
-            "Make finished with error, please check the log.")
+        pkg["logger"].error("Make finished with error, please check the log.")
 
     try:
-        pkg["logger"].info(
-            "Running make install. Output redirected to make_install.log .")
-        subprocess.check_output(
-            "make install > ../make_install.log 2>&1", shell=True)
+        pkg["logger"].info("Running make install. Output redirected to make_install.log .")
+        subprocess.check_output("make install > ../make_install.log 2>&1", shell=True)
     except subprocess.CalledProcessError:
-        pkg["logger"].error(
-            "Make install finished with error, please check the log.")
+        pkg["logger"].error("Make install finished with error, please check the log.")
 
     os.chdir(pkg["path"])
 
@@ -156,22 +174,22 @@ def make(pkg):
 def clone_git(pkg):
     clone_dir = pkg["src_root_path"]
     if not os.path.exists(clone_dir):
-        pkg["logger"].info(
-            "Cloning git repo. Output redirected to git_clone.log .")
-        subprocess.check_output(
-            "git clone " + pkg["git"] + " " + clone_dir +
-            " > git_clone.log 2>&1",
-            shell=True)
+        pkg["logger"].info("Cloning git repo. Output redirected to git_clone.log .")
+        subprocess.check_output("git clone " + pkg["git"] + " " + clone_dir +
+                                " > git_clone.log 2>&1",
+                                shell=True)
     else:
-        pkg["logger"].info(
-            "Source git repo already available and will be reused.")
+        pkg["logger"].info("Source git repo already available and will be reused.")
 
 
 def shell_source(script):
     """Sometime you want to emulate the action of "source" in bash,
     settings some environment variables. Here is a way to do it."""
-    pipe = subprocess.Popen(
-        ". %s; env" % script, stdout=subprocess.PIPE, shell=True)
+
+    pipe = subprocess.Popen(". %s; env" % script,
+                            stdout=subprocess.PIPE,
+                            shell=True,
+                            executable="/bin/bash" if os_name() == 'ubuntu' else None)
     output = pipe.communicate()[0].decode()
     env = {}
     for line in output.splitlines():
@@ -202,13 +220,10 @@ def custom_run(pkg, cmd_set):
     if cmd_set not in pkg:
         return True
 
-    pkg["logger"].info(
-        "Running custom package commands. Output redirected to custom_cmd.log ."
-    )
+    pkg["logger"].info("Running custom package commands. Output redirected to custom_cmd.log .")
 
     log_file = os.path.join(pkg["install_path"], "custom_cmd.log")
     for cmd in pkg[cmd_set]:
         cmd = cmd.format(**pkg)
         pkg["logger"].info('Running command: "{}"'.format(cmd))
-        subprocess.check_output(
-            "{} > {} 2>&1".format(cmd, log_file), shell=True)
+        subprocess.check_output("{} > {} 2>&1".format(cmd, log_file), shell=True)

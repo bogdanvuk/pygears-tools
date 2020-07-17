@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pygears-tools',
-    version='0.1',
+    version='0.1.4',
     description='Helper scripts for installing pygears related tools',
 
     # The project's main homepage.
@@ -17,7 +17,7 @@ setup(
     license='MIT',
 
     packages=find_packages(exclude=['examples*', 'docs']),
-    package_data={'': ['*.json', '.spacemacs']},
+    package_data={'': ['*.json', '.spacemacs', 'gtkwave/*.diff']},
     include_package_data=True,
     entry_points={
         'console_scripts': [

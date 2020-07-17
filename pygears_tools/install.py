@@ -9,8 +9,8 @@ import glob
 import errno
 import argparse
 import configparser
-from pygears_tools.utils import (shell_source, custom_run, download_and_untar,
-                                 clone_git, install_deps, set_env)
+from pygears_tools.utils import (shell_source, custom_run, download_and_untar, list_pkg_deps,
+                                 clone_git, install_deps, set_env, os_name, install_deps)
 from pygears_tools import default_cpp
 
 
@@ -34,18 +34,6 @@ def create_logger(pkg):
     # logger.addHandler(fh)
     logger.addHandler(ch)
     pkg["logger"] = logger
-
-
-def os_name():
-    with open('/etc/os-release') as f:
-        file_content = '[root]\n' + f.read()
-
-    os_cfg = configparser.RawConfigParser()
-    os_cfg.read_string(file_content)
-
-    name = os_cfg['root']['NAME'].strip('"').split()[0].lower()
-
-    return name
 
 
 def os_install_cmd():
@@ -85,20 +73,9 @@ def get_pkg_classes(pkgs):
     return classes
 
 
-def list_pkg_deps(pkgs):
-    deps = []
-    for pkg in pkgs:
-        if 'git' in pkg:
-            pkg['deps'] = ' '.join([pkg.get('deps', ''), 'git'])
-
-        if 'deps' in pkg:
-            deps += pkg['deps'].split()
-
-    if any(pkg.get("flow", '') == "default_cpp" for pkg in pkgs):
-        print('{} {}'.format(os_install_cmd(),
-                             default_cpp.dependencies[os_name()]))
-
-    print('{} {}'.format(os_install_cmd(), ' '.join(set(deps))))
+def print_pkg_deps_install(lines):
+    for l in lines:
+        print('{} {}'.format(os_install_cmd(), ' '.join(l)))
 
 
 def expand_path(path):
@@ -134,7 +111,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
     filter_deps_by_os(pkgs)
 
     if list_deps:
-        list_pkg_deps(pkgs)
+        deps = list_pkg_deps(pkgs)
+        print_pkg_deps_install(deps)
         return 0
 
     os.makedirs(cfg["tools_path"], exist_ok=True)
@@ -174,15 +152,7 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
         create_logger(pkg)
 
     if do_install_deps:
-        for pkg in pkgs:
-            if pkg.get("flow", '') == "default_cpp":
-                pkg['deps'] = ' '.join(
-                    [pkg.get('deps', ''), default_cpp.dependencies])
-
-            if 'git' in pkg:
-                pkg['deps'] = ' '.join([pkg.get('deps', ''), 'git'])
-
-            install_deps(pkg)
+        install_deps(pkgs)
 
     for pkg in pkgs:
 
@@ -282,7 +252,6 @@ def main(argv=sys.argv):
 
 
 # main([
-#     '', '-o', '/tools/home/work/pygears_tools_test', '-w',
-#     '/tools/home/work/pygears_tools_test/home', '-d'
+#     '', '-d'
 # ])
-# main(['', '-l'])
+# main(['', '-d'])

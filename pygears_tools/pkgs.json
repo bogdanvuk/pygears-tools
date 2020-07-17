@@ -103,16 +103,16 @@
 		    "name": "pyenv",
         "class": ["all", "dev", "gui", "min"],
 		    "git": "https://github.com/pyenv/pyenv.git",
-		    "src_root_path": "{home_path}/.pyenv",
+		    "src_root_path": "{install_path}/.pyenv",
         "deps": {
             "ubuntu": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev",
             "opensuse": "openssl-devel ncurses-devel readline-devel zlib-devel tk-devel libffi-devel"
         },
 		    "env" : [
-			      "export PYENV_ROOT={home_path}/.pyenv",
-			      "export PATH={home_path}/.pyenv/bin:$PATH",
+			      "export PYENV_ROOT={install_path}/.pyenv",
+			      "export PATH={install_path}/.pyenv/bin:$PATH",
 			      "eval \"$(pyenv init -)\"",
-				  "export PATH={home_path}/.pyenv/libexec:$PATH"
+				  "export PATH={install_path}/.pyenv/libexec:$PATH"
 		    ]
 	  },
 	  {
