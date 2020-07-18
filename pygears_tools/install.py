@@ -10,7 +10,7 @@ import errno
 import argparse
 import configparser
 from pygears_tools.utils import (shell_source, custom_run, download_and_untar, list_pkg_deps,
-                                 clone_git, install_deps, set_env, os_name, install_deps)
+                                 clone_git, install_deps, set_env, os_name, install_deps, pip_install)
 from pygears_tools import default_cpp
 
 
@@ -137,6 +137,16 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
     if not cfg['dry_run']:
         shell_source(cfg["tools_sh_path"])
 
+    pyenv = False
+    for i in range(len(pkgs)):
+        if pkgs[i]['name'] == 'pyenv':
+            if not cfg['tools_path']:
+                del pkgs[i]
+            else:
+                pyenv = True
+
+            break
+
     for pkg in pkgs:
         pkg.update(cfg)
 
@@ -186,10 +196,16 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
 
         custom_run(pkg, "pre_custom_run")
 
+        if pkg['path']:
+            custom_run(pkg, "pre_custom_runl")
+
         if "flow" in pkg:
             pkg["logger"].info("Using {} flow.".format(pkg["flow"]))
             if pkg["flow"] == "default_cpp":
                 default_cpp.flow(pkg)
+
+        if "pip" in pkg:
+            pip_install(pkg, pyenv)
 
         if not pkg['dry_run']:
             os.chdir(pkg["install_path"])
@@ -198,6 +214,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
             set_env(pkg)
 
         custom_run(pkg, "post_custom_run")
+        if pkg['path']:
+            custom_run(pkg, "post_custom_runl")
 
         pkg["logger"].info("Installation finished successfully!")
 

@@ -32,6 +32,11 @@
 		    "flow": "default_cpp",
 		    "url": "https://www.veripool.org/ftp/verilator-4.020.tgz",
 		    "src_root_path": "{install_path}/verilator-4.020",
+        "pre_custom_runl": ["export VERILATOR_ROOT={path}"],
+        "post_custom_runl": [
+            "cp -r {path}/share/verilator/include {path}",
+            "cp {path}/share/verilator/bin/* {path}/bin"
+		    ],
 		    "configure": "",
 		    "deps": {
             "ubuntu": "autoconf flex bison",
@@ -110,7 +115,7 @@
     },
 	  {
 		    "name": "pyenv",
-        "class": ["all"],
+        "class": ["all", "dev", "gui"],
 		    "git": "https://github.com/pyenv/pyenv.git",
 		    "src_root_path": "{install_path}/.pyenv",
         "deps": {
@@ -131,7 +136,7 @@
     {
 		    "name": "pygears",
         "class": ["all", "dev", "gui", "min"],
-		    "post_custom_run" : ["pip3 install pygears"]
+		    "pip" : "pygears"
     },
 	  {
 		    "name": "spacemacs_python",
@@ -161,9 +166,7 @@
 	  {
 		    "name": "gearbox",
         "class": ["all", "dev", "gui"],
-		    "post_custom_run" : [
-			      "pip3 install pygears-gearbox"
-		    ]
+		    "pip" : "pygears-gearbox"
 	  },
 	  {
 		    "name": "ngspice",

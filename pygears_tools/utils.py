@@ -68,7 +68,7 @@ def untar(pkg):
     pkg["logger"].info("Unpacking " + get_url_archive_file_name(pkg))
     if not pkg['dry_run']:
         tar = tarfile.open(fileobj=ProgressFileObject(get_url_archive_path(pkg), pkg))
-        tar.extractall("_install")
+        tar.extractall(pkg['install_path'])
         tar.close()
         sys.stdout.write("\n")
 
@@ -276,3 +276,14 @@ def custom_run(pkg, cmd_set):
 
         if not pkg['dry_run']:
             subprocess.check_output("{} > {} 2>&1".format(cmd, log_file), shell=True)
+
+def pip_install(pkg, pyenv):
+    if pyenv:
+        cmd = f'pip3 install -U {pkg["pip"]}'
+    else:
+        cmd = f'sudo pip3 install -U {pkg["pip"]}'
+
+    log_file = os.path.join(pkg["install_path"], "pip.log")
+    pkg["logger"].info('Command: "{}"'.format(cmd))
+    if not pkg['dry_run']:
+        subprocess.check_output(f"{cmd} > {log_file} 2>&1", shell=True)
