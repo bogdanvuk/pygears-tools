@@ -25,7 +25,7 @@ def get_url_archive_file_name(pkg):
 
 
 def get_url_archive_path(pkg):
-    return os.path.join("_install", get_url_archive_file_name(pkg))
+    return os.path.join(pkg['install_path'], get_url_archive_file_name(pkg))
 
 
 def download_source(pkg):
@@ -37,8 +37,11 @@ def download_source(pkg):
         sys.stdout.flush()
 
     pkg["logger"].info("Downloading " + pkg["url"])
-    urllib.request.urlretrieve(pkg["url"], get_url_archive_path(pkg), dlProgress)
-    sys.stdout.write("\n")
+
+    if not pkg['dry_run']:
+        urllib.request.urlretrieve(pkg["url"], get_url_archive_path(pkg), dlProgress)
+        sys.stdout.write("\n")
+
     return fn
 
 
@@ -63,10 +66,11 @@ class ProgressFileObject(io.FileIO):
 
 def untar(pkg):
     pkg["logger"].info("Unpacking " + get_url_archive_file_name(pkg))
-    tar = tarfile.open(fileobj=ProgressFileObject(get_url_archive_path(pkg), pkg))
-    tar.extractall("_install")
-    tar.close()
-    sys.stdout.write("\n")
+    if not pkg['dry_run']:
+        tar = tarfile.open(fileobj=ProgressFileObject(get_url_archive_path(pkg), pkg))
+        tar.extractall("_install")
+        tar.close()
+        sys.stdout.write("\n")
 
 
 def download_and_untar(pkg):
@@ -77,6 +81,7 @@ def download_and_untar(pkg):
         pkg["logger"].info("Source archive already available and will be reused.")
 
     src_dir = pkg["src_root_path"]
+
     unpack = False
     if not os.path.exists(src_dir):
         unpack = True
@@ -86,7 +91,10 @@ def download_and_untar(pkg):
 
         if tartime < srctime:
             unpack = True
-            shutil.rmtree(src_dir)
+
+            if not pkg['dry_run']:
+                shutil.rmtree(src_dir)
+
             pkg["logger"].info("Source older than archive, updating...")
 
     if unpack:
@@ -119,65 +127,103 @@ def install_deps(pkgs):
     for d in deps:
         cmd = "sudo apt install -y " + ' '.join(d)
         print(cmd)
-        subprocess.run(cmd, shell=True, check=True)
+
+        if not pkgs[0]['dry_run']:
+            subprocess.run(cmd, shell=True, check=True)
 
 
 def configure(pkg):
-
-    os.chdir(pkg["src_root_path"])
+    if not pkg['dry_run']:
+        os.chdir(pkg["src_root_path"])
 
     if "configure" in pkg:
         pkg["logger"].info("Running auto configure. Output redirected to configure.log .")
-        subprocess.check_output("./configure --prefix=" + pkg["path"] + " " + pkg["configure"] +
-                                " > ../configure.log 2>&1",
-                                shell=True)
-    os.chdir(pkg["path"])
+        if pkg['path']:
+            cmd = f"./configure --prefix={pkg['path']} {pkg['configure']} > ../configure.log 2>&1"
+        else:
+            cmd = f"./configure {pkg['configure']} > ../configure.log 2>&1"
+
+        pkg["logger"].info(f"Command: {cmd}.")
+
+        if not pkg['dry_run']:
+            subprocess.check_output(cmd, shell=True)
+
+    if not pkg['dry_run']:
+        os.chdir(pkg["install_path"])
 
 
 def cmake(pkg):
-    os.chdir(pkg["src_root_path"])
+    if not pkg['dry_run']:
+        os.chdir(pkg["src_root_path"])
+        if os.path.exists("build"):
+            shutil.rmtree("build")
+
+        os.mkdir("build")
+        os.chdir("build")
+
     if "cmake_cfg" not in pkg:
         pkg["cmake_cfg"] = ""
 
-    if os.path.exists("build"):
-        shutil.rmtree("build")
-
-    os.mkdir("build")
-    os.chdir("build")
     pkg["logger"].info("Running CMake. Output redirected to cmake.log .")
-    subprocess.check_output(
-        "cmake -DCMAKE_INSTALL_PREFIX:PATH={} {} .. > ../../cmake.log 2>&1".format(
-            pkg["path"], pkg["cmake_cfg"]),
-        shell=True)
+
+    if pkg['path']:
+        cmd = (f"cmake -DCMAKE_INSTALL_PREFIX:PATH={pkg['path']} {pkg['cmake_cfg']}"
+               " .. > ../../cmake.log 2>&1")
+    else:
+        cmd = (f"cmake {pkg['cmake_cfg']} .. > ../../cmake.log 2>&1")
+
+    pkg["logger"].info(f"Command: {cmd}.")
+
+    if not pkg['dry_run']:
+        subprocess.check_output(cmd, shell=True)
+
     pkg["src_root_path"] = os.getcwd()
-    os.chdir(pkg["path"])
+
+    if not pkg['dry_run']:
+        os.chdir(pkg["path"])
 
 
 def make(pkg):
-    os.chdir(pkg["src_root_path"])
+    if not pkg['dry_run']:
+        os.chdir(pkg["src_root_path"])
 
-    try:
-        pkg["logger"].info("Running make. Output redirected to make.log .")
-        subprocess.check_output("make -j > ../make.log 2>&1", shell=True)
-    except subprocess.CalledProcessError:
-        pkg["logger"].error("Make finished with error, please check the log.")
+    pkg["logger"].info("Running make. Output redirected to make.log .")
+    cmd = f"make -j4 > ../make.log 2>&1"
+    pkg["logger"].info(f"Command: {cmd}.")
 
-    try:
-        pkg["logger"].info("Running make install. Output redirected to make_install.log .")
-        subprocess.check_output("make install > ../make_install.log 2>&1", shell=True)
-    except subprocess.CalledProcessError:
-        pkg["logger"].error("Make install finished with error, please check the log.")
+    if not pkg['dry_run']:
+        try:
+            subprocess.check_output(cmd, shell=True)
+        except subprocess.CalledProcessError:
+            pkg["logger"].error("Make finished with error, please check the log.")
 
-    os.chdir(pkg["path"])
+    pkg["logger"].info("Running make install. Output redirected to make_install.log .")
+    if pkg['path']:
+        cmd = "make install > ../make_install.log 2>&1"
+    else:
+        cmd = "sudo make install > ../make_install.log 2>&1"
+
+    pkg["logger"].info(f"Command: {cmd}.")
+
+    if not pkg['dry_run']:
+        try:
+            subprocess.check_output(cmd, shell=True)
+        except subprocess.CalledProcessError:
+            pkg["logger"].error("Make install finished with error, please check the log.")
+
+    if not pkg['dry_run']:
+        os.chdir(pkg["path"])
 
 
 def clone_git(pkg):
     clone_dir = pkg["src_root_path"]
     if not os.path.exists(clone_dir):
         pkg["logger"].info("Cloning git repo. Output redirected to git_clone.log .")
-        subprocess.check_output("git clone " + pkg["git"] + " " + clone_dir +
-                                " > git_clone.log 2>&1",
-                                shell=True)
+        cmd = f"git clone {pkg['git']} {clone_dir} > git_clone.log 2>&1"
+        pkg["logger"].info(f"Command: {cmd}.")
+
+        if not pkg['dry_run']:
+            subprocess.check_output(cmd, shell=True)
     else:
         pkg["logger"].info("Source git repo already available and will be reused.")
 
@@ -207,13 +253,14 @@ def set_env(pkg):
         return True
 
     pkg["logger"].info("Exporting the environment variables.")
-    with open(pkg["tools_sh_path"], "a") as text_file:
-        print("", file=text_file)
-        print("# Environment for {}".format(pkg["name"]), file=text_file)
-        for cmd in pkg["env"]:
-            print(cmd.format(**pkg), file=text_file)
+    if not pkg['dry_run']:
+        with open(pkg["tools_sh_path"], "a") as text_file:
+            print("", file=text_file)
+            print("# Environment for {}".format(pkg["name"]), file=text_file)
+            for cmd in pkg["env"]:
+                print(cmd.format(**pkg), file=text_file)
 
-    shell_source(pkg["tools_sh_path"])
+        shell_source(pkg["tools_sh_path"])
 
 
 def custom_run(pkg, cmd_set):
@@ -225,5 +272,7 @@ def custom_run(pkg, cmd_set):
     log_file = os.path.join(pkg["install_path"], "custom_cmd.log")
     for cmd in pkg[cmd_set]:
         cmd = cmd.format(**pkg)
-        pkg["logger"].info('Running command: "{}"'.format(cmd))
-        subprocess.check_output("{} > {} 2>&1".format(cmd, log_file), shell=True)
+        pkg["logger"].info('Command: "{}"'.format(cmd))
+
+        if not pkg['dry_run']:
+            subprocess.check_output("{} > {} 2>&1".format(cmd, log_file), shell=True)

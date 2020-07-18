@@ -32,11 +32,6 @@
 		    "flow": "default_cpp",
 		    "url": "https://www.veripool.org/ftp/verilator-4.020.tgz",
 		    "src_root_path": "{install_path}/verilator-4.020",
-        "pre_custom_run": ["export VERILATOR_ROOT={path}"],
-        "post_custom_run": [
-            "cp -r {path}/share/verilator/include {path}",
-            "cp {path}/share/verilator/bin/* {path}/bin"
-		    ],
 		    "configure": "",
 		    "deps": {
             "ubuntu": "autoconf flex bison",
@@ -115,38 +110,34 @@
     },
 	  {
 		    "name": "pyenv",
-        "class": ["all", "dev", "gui", "min"],
+        "class": ["all"],
 		    "git": "https://github.com/pyenv/pyenv.git",
 		    "src_root_path": "{install_path}/.pyenv",
         "deps": {
             "ubuntu": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev",
             "opensuse": "openssl-devel ncurses-devel readline-devel zlib-devel tk-devel libffi-devel"
         },
+		    "post_custom_run" : [
+			      "pyenv install -s 3.7.5",
+			      "pyenv global 3.7.5"
+		    ],
 		    "env" : [
 			      "export PYENV_ROOT={install_path}/.pyenv",
 			      "export PATH={install_path}/.pyenv/bin:$PATH",
 			      "eval \"$(pyenv init -)\"",
-				  "export PATH={install_path}/.pyenv/libexec:$PATH"
-		    ]
-	  },
-	  {
-		    "name": "python",
-        "class": ["all", "dev", "gui", "min"],
-		    "post_custom_run" : [
-			      "pyenv install -s 3.7.5",
-			      "pyenv global 3.7.5"
+				    "export PATH={install_path}/.pyenv/libexec:$PATH"
 		    ]
 	  },
     {
 		    "name": "pygears",
         "class": ["all", "dev", "gui", "min"],
-		    "post_custom_run" : ["pip install pygears"]
+		    "post_custom_run" : ["pip3 install pygears"]
     },
 	  {
 		    "name": "spacemacs_python",
         "class": ["all", "dev"],
 		    "post_custom_run" : [
-			      "pip install autoflake epc flake8 importmagic jedi yapf"
+			      "pip3 install autoflake epc flake8 importmagic jedi yapf"
 		    ]
 	  },
 	  {
@@ -171,7 +162,7 @@
 		    "name": "gearbox",
         "class": ["all", "dev", "gui"],
 		    "post_custom_run" : [
-			      "pip install pygears-gearbox"
+			      "pip3 install pygears-gearbox"
 		    ]
 	  },
 	  {

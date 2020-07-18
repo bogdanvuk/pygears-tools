@@ -26,8 +26,7 @@ def create_logger(pkg):
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     # create formatter and add it to the handlers
-    formatter = logging.Formatter(
-        '%(asctime)s [%(name)-12s]: %(message)s', datefmt='%H:%M:%S')
+    formatter = logging.Formatter('%(asctime)s [%(name)-12s]: %(message)s', datefmt='%H:%M:%S')
     # fh.setFormatter(formatter)
     ch.setFormatter(formatter)
     # add the handlers to the logger
@@ -82,21 +81,25 @@ def expand_path(path):
     return os.path.abspath(os.path.expanduser(os.path.expandvars(path)))
 
 
-def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
-            list_deps):
+def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_deps, dry_run):
     # print("Please enter sudo password:")
     # subprocess.run('sudo echo "Current install directory"; pwd', shell=True)
 
     cfg = {
         "home_path": expand_path(home_path),
-        "tools_path": expand_path(tools_path),
+        "tools_path": expand_path(tools_path) if tools_path else None,
+        "tools_install_path": expand_path(tools_path) if tools_path else '~/.pygears/tools',
         "install_script_path": expand_path(os.path.dirname(__file__)),
-        "tools_sh_path": expand_path(os.path.join(tools_path, "tools.sh")),
-        "pkgs_fn": expand_path(pkgs_fn)
+        "tools_sh_path": expand_path(os.path.join(tools_path, "tools.sh")) if tools_path else None,
+        "pkgs_fn": expand_path(pkgs_fn),
+        'dry_run': dry_run
     }
 
     if not list_deps:
-        print('Installing to: {}'.format(cfg["tools_path"]))
+        if cfg["tools_path"]:
+            print(f'Installing to: {cfg["tools_path"]}')
+        else:
+            print(f'Installing system-wide')
 
     with open(cfg["pkgs_fn"]) as json_data:
         pkgs = json.load(json_data)
@@ -104,8 +107,7 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
     if pkg_names:
         pkgs = [
             p for p in pkgs
-            if (p['name'] in pkg_names or any(cls in pkg_names
-                                              for cls in p['class']))
+            if (p['name'] in pkg_names or any(cls in pkg_names for cls in p['class']))
         ]
 
     filter_deps_by_os(pkgs)
@@ -115,37 +117,42 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
         print_pkg_deps_install(deps)
         return 0
 
-    os.makedirs(cfg["tools_path"], exist_ok=True)
-    os.makedirs(cfg["home_path"], exist_ok=True)
+    if not cfg['dry_run']:
+        os.makedirs(cfg["home_path"], exist_ok=True)
 
-    os.chdir(cfg["tools_path"])
+        os.makedirs(cfg["tools_install_path"], exist_ok=True)
+        os.chdir(cfg["tools_install_path"])
 
-    if not os.path.exists(cfg["tools_sh_path"]):
+    if cfg["tools_sh_path"] and not os.path.exists(cfg["tools_sh_path"]):
         with open(cfg["tools_sh_path"], "w") as text_file:
             print("#!/bin/bash", file=text_file)
-            print(
-                "# Script for setting up the environment for all the tools",
-                file=text_file)
-            print(
-                "# Tools installed relative to: {}".format(cfg["tools_path"]),
-                file=text_file)
+            print("# Script for setting up the environment for all the tools", file=text_file)
+            print("# Tools installed relative to: {}".format(cfg["tools_path"]), file=text_file)
             print("", file=text_file)
 
             print("# Setting new home directory:", file=text_file)
 
             print("export HOME={}".format(cfg["home_path"]), file=text_file)
 
-    shell_source(cfg["tools_sh_path"])
+    if not cfg['dry_run']:
+        shell_source(cfg["tools_sh_path"])
 
     for pkg in pkgs:
         pkg.update(cfg)
-        pkg["path"] = expand_path(os.path.join(pkg["tools_path"], pkg["name"]))
-        pkg["install_path"] = expand_path(
-            os.path.join(pkg["path"], "_install"))
 
-        os.chdir(pkg["tools_path"])
-        os.makedirs(pkg["name"], exist_ok=True)
-        os.makedirs(pkg["install_path"], exist_ok=True)
+        if pkg['tools_path']:
+            pkg["path"] = expand_path(os.path.join(pkg["tools_install_path"], pkg["name"]))
+        else:
+            pkg["path"] = None
+
+        pkg["install_path"] = expand_path(
+            os.path.join(pkg["tools_install_path"], pkg["name"], "_install"))
+
+        if not cfg['dry_run']:
+            os.chdir(pkg["tools_install_path"])
+            os.makedirs(pkg["name"], exist_ok=True)
+            os.makedirs(pkg["install_path"], exist_ok=True)
+
         if "src_root_path" in pkg:
             pkg["src_root_path"] = pkg["src_root_path"].format(**pkg)
 
@@ -163,15 +170,13 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
             pkg["logger"].info("Copying package files...")
             for cmd in pkg["copy"]:
                 for fn in glob.glob(cmd[0].format(**pkg)):
-                    pkg["logger"].info("Copying {} to {}".format(
-                        fn, cmd[1].format(**pkg)))
-                    copyanything(
-                        fn,
-                        os.path.join(cmd[1].format(**pkg),
-                                     os.path.basename(fn)))
+                    pkg["logger"].info("Copying {} to {}".format(fn, cmd[1].format(**pkg)))
 
-        if os.path.exists(pkg['path']):
-            os.chdir(pkg["path"])
+                    if not pkg['dry_run']:
+                        copyanything(fn, os.path.join(cmd[1].format(**pkg), os.path.basename(fn)))
+
+        if not pkg['dry_run']:
+            os.chdir(pkg["install_path"])
 
         if "url" in pkg:
             download_and_untar(pkg)
@@ -186,50 +191,48 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps,
             if pkg["flow"] == "default_cpp":
                 default_cpp.flow(pkg)
 
-        if os.path.exists(pkg['path']):
-            os.chdir(pkg["path"])
+        if not pkg['dry_run']:
+            os.chdir(pkg["install_path"])
 
-        set_env(pkg)
+        if pkg['tools_path']:
+            set_env(pkg)
+
         custom_run(pkg, "post_custom_run")
 
         pkg["logger"].info("Installation finished successfully!")
 
-    print('Installation finished, before invoking tools, source {}'.format(
-        cfg["tools_sh_path"]))
+    print('Installation finished, before invoking tools, source {}'.format(cfg["tools_sh_path"]))
 
 
 def get_argparser():
     parser = argparse.ArgumentParser(prog="PyGears tools installer")
 
-    parser.add_argument(
-        '-p',
-        dest='pkgs_fn',
-        default=os.path.join(os.path.dirname(__file__), 'pkgs.json'),
-        help="Path to packages description file")
+    parser.add_argument('-p',
+                        dest='pkgs_fn',
+                        default=os.path.join(os.path.dirname(__file__), 'pkgs.json'),
+                        help="Path to packages description file")
 
-    parser.add_argument(
-        '-o',
-        dest='tools_path',
-        default=os.path.expanduser('~/.pygears/tools'),
-        help="Directory to install tools to")
+    parser.add_argument('-o',
+                        dest='tools_path',
+                        default=None,
+                        help="Directory to install tools to. Default will install system-wide")
 
-    parser.add_argument(
-        '-w',
-        dest='home_path',
-        default=os.path.expanduser("~"),
-        help="Directory to setup home in")
+    parser.add_argument('-w',
+                        dest='home_path',
+                        default=os.path.expanduser("~"),
+                        help="Directory to setup home in")
 
-    parser.add_argument(
-        '-l',
-        dest='list_deps',
-        action='store_true',
-        help="Only list the package dependencies and exit")
+    parser.add_argument('-l',
+                        dest='list_deps',
+                        action='store_true',
+                        help="Only list the package dependencies and exit")
 
-    parser.add_argument(
-        '-d',
-        dest='install_deps',
-        action='store_true',
-        help="Automatically install system dependencies. Will require sudo.")
+    parser.add_argument('-d',
+                        dest='install_deps',
+                        action='store_true',
+                        help="Automatically install system dependencies. Will require sudo.")
+
+    parser.add_argument('-r', dest='dry_run', action='store_true', help="Dry run")
 
     parser.add_argument(
         'pkg_names',
@@ -247,11 +250,12 @@ def main(argv=sys.argv):
     parser = get_argparser()
     args = parser.parse_args(argv[1:])
 
-    install(args.pkgs_fn, args.pkg_names, args.tools_path, args.home_path,
-            args.install_deps, args.list_deps)
+    install(args.pkgs_fn, args.pkg_names, args.tools_path, args.home_path, args.install_deps,
+            args.list_deps, args.dry_run)
 
 
 # main([
 #     '', '-d'
 # ])
-# main(['', '-d'])
+# main(['', '-dr'])
+# main(['', '-dr'])
