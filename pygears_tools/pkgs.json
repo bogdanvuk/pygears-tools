@@ -77,7 +77,7 @@
             "patch {src_root_path}/src/helpers/shmidcat.c < {install_script_path}/gtkwave/shmidcat.diff"
         ],
 		    "deps": {
-            "ubuntu": "gperf libgtk2.0-dev tk-dev liblzma-dev",
+            "ubuntu": "gperf libgtk2.0-dev tk-dev liblzma-dev libbz2-dev",
             "opensuse": "gperf gtk2-devel"
         },
 		    "src_root_path": "{install_path}/gtkwave-gtk3-3.3.98",

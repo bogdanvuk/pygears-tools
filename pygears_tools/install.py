@@ -10,7 +10,8 @@ import errno
 import argparse
 import configparser
 from pygears_tools.utils import (shell_source, custom_run, download_and_untar, list_pkg_deps,
-                                 clone_git, install_deps, set_env, os_name, install_deps, pip_install)
+                                 clone_git, install_deps, set_env, os_name, install_deps,
+                                 pip_install)
 from pygears_tools import default_cpp
 
 
@@ -86,9 +87,9 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
     # subprocess.run('sudo echo "Current install directory"; pwd', shell=True)
 
     cfg = {
-        "home_path": expand_path(home_path),
+        "home_path": expand_path(home_path) if home_path else None,
         "tools_path": expand_path(tools_path) if tools_path else None,
-        "tools_install_path": expand_path(tools_path) if tools_path else '~/.pygears/tools',
+        "tools_install_path": expand_path(tools_path if tools_path else '~/.pygears/tools'),
         "install_script_path": expand_path(os.path.dirname(__file__)),
         "tools_sh_path": expand_path(os.path.join(tools_path, "tools.sh")) if tools_path else None,
         "pkgs_fn": expand_path(pkgs_fn),
@@ -117,8 +118,10 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
         print_pkg_deps_install(deps)
         return 0
 
+    print(f'Storing installation files into: "{cfg["tools_install_path"]}". Creating folder.')
     if not cfg['dry_run']:
-        os.makedirs(cfg["home_path"], exist_ok=True)
+        if cfg['home_path']:
+            os.makedirs(cfg["home_path"], exist_ok=True)
 
         os.makedirs(cfg["tools_install_path"], exist_ok=True)
         os.chdir(cfg["tools_install_path"])
@@ -132,7 +135,8 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
 
             print("# Setting new home directory:", file=text_file)
 
-            print("export HOME={}".format(cfg["home_path"]), file=text_file)
+            if cfg['home_path']:
+                print("export HOME={}".format(cfg["home_path"]), file=text_file)
 
     if not cfg['dry_run']:
         shell_source(cfg["tools_sh_path"])
@@ -219,7 +223,9 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
 
         pkg["logger"].info("Installation finished successfully!")
 
-    print('Installation finished, before invoking tools, source {}'.format(cfg["tools_sh_path"]))
+    if cfg["tools_sh_path"]:
+        print('Installation finished, before invoking tools, source {}'.format(
+            cfg["tools_sh_path"]))
 
 
 def get_argparser():
@@ -235,10 +241,7 @@ def get_argparser():
                         default=None,
                         help="Directory to install tools to. Default will install system-wide")
 
-    parser.add_argument('-w',
-                        dest='home_path',
-                        default=os.path.expanduser("~"),
-                        help="Directory to setup home in")
+    parser.add_argument('-w', dest='home_path', default=None, help="Directory to setup home in")
 
     parser.add_argument('-l',
                         dest='list_deps',

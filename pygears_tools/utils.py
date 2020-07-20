@@ -180,7 +180,7 @@ def cmake(pkg):
     pkg["src_root_path"] = os.getcwd()
 
     if not pkg['dry_run']:
-        os.chdir(pkg["path"])
+        os.chdir(pkg["src_root_path"])
 
 
 def make(pkg):
@@ -212,7 +212,7 @@ def make(pkg):
             pkg["logger"].error("Make install finished with error, please check the log.")
 
     if not pkg['dry_run']:
-        os.chdir(pkg["path"])
+        os.chdir(pkg["src_root_path"])
 
 
 def clone_git(pkg):
