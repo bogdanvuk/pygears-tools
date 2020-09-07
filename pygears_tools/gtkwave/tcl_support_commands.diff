@@ -1,4 +1,4 @@
-455a456,520
+455a456,525
 > void signal_value_at(char *sig_name, char* buff, TimeType time) {
 > 
 >   Trptr t = NULL ;
@@ -6,6 +6,11 @@
 > 
 >   if (!(t = is_signal_displayed(sig_name)))
 >     t = t_created = sig_name_to_Trptr(sig_name) ;
+> 
+>   if (t == NULL) {
+>       buff[0] = 0;
+>       return;
+>   }
 > 
 >   hptr curr;
 >   if (time == (MAX_HISTENT_TIME - 1)) {

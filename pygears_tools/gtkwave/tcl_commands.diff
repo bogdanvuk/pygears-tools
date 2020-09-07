@@ -59,7 +59,7 @@
 >   return(TCL_OK);
 > }
 > 
-1534a1568,1626
+1534a1568,1629
 > static gint pygears_keypress_handler(GtkWidget *widget, GdkEventKey *event, gpointer data)
 > {
 >   printf("$$KeyPress:%d,%d\n", event->state, event->keyval);
@@ -116,11 +116,14 @@
 >   }
 >   signal_value_at(sig_name, val, time);
 > 
+>   if (!val[0])
+>       return (gtkwavetcl_printString(clientData, interp, objc, objv, "e"));
+> 
 >   return(gtkwavetcl_printString(clientData, interp, objc, objv, val));
 > }
 > 
-2180a2273
+2180a2276
 > 	{"toggleStripGUI",		gtkwavetcl_toggleStripGUI},
-2181a2275,2276
+2181a2278,2279
 > 	{"signalValueAt",                    gtkwavetcl_signalValueAt},
 > 	{"getGtkWindowID",                    gtkwavetcl_getGtkWindowID},
