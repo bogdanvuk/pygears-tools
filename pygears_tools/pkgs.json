@@ -136,7 +136,11 @@
     {
 		    "name": "pygears",
         "class": ["all", "dev", "gui", "min"],
-		    "pip" : "pygears"
+		    "pip" : "git+git://github.com/bogdanvuk/pygears.git",
+        "deps": {
+            "ubuntu": "git",
+            "opensuse": "git"
+        }
     },
 	  {
 		    "name": "spacemacs_python",
@@ -166,7 +170,11 @@
 	  {
 		    "name": "gearbox",
         "class": ["all", "dev", "gui"],
-		    "pip" : "pygears-gearbox"
+		    "pip" : "git+git://github.com/bogdanvuk/gearbox.git",
+        "deps": {
+            "ubuntu": "git libqt5gui5",
+            "opensuse": "git"
+        }
 	  },
 	  {
 		    "name": "ngspice",
