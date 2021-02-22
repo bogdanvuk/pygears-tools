@@ -163,6 +163,7 @@
 		    "env" : [
 			      "export PATH={path}/bin:$PATH",
             "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
+            "export LIBRARY_PATH=$LD_LIBRARY_PATH",
             "export CPATH={path}/include:$CPATH",
             "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
 		    ]
