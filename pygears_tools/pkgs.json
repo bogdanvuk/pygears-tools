@@ -1,193 +1,248 @@
 [
-    {
-        "name": "emacs",
-        "class": ["all", "dev"],
-        "flow": "default_cpp",
-        "url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.3.tar.gz",
-        "src_root_path": "{install_path}/emacs-26.3",
-        "deps": {
-            "ubuntu": "libjpeg-dev gnutls-dev libx11-dev libpng-dev libncurses5-dev libxml2-dev libgtk-3-dev libgtk2.0-dev libtiff-dev libgif-dev libxpm-dev",
-            "opensuse": "libjpeg-devel libgnutls-devel libX11-devel libpng-devel libncurses5 libxml2-devel gtk3-devel gtk2-devel libtiff-devel giflib-devel libXpm-devel"
-        },
-        "configure": "",
-        "env" : [
-            "export PATH={path}/bin:$PATH"
-        ]
-    },
-	  {
-		    "name": "spacemacs",
-        "class": ["all", "dev"],
-		    "git": "https://github.com/syl20bnr/spacemacs.git",
-		    "src_root_path": "{home_path}/.emacs.d",
-		    "copy": [
-			      ["{install_script_path}/.spacemacs", "{home_path}"]
-		    ],
-		    "post_custom_run": [
-			      "cd {home_path}/.emacs.d; git checkout develop"
-		    ]
-	  },
-    {
-		    "name": "verilator",
-        "class": ["all", "dev", "gui", "min"],
-		    "flow": "default_cpp",
-		    "url": "https://www.veripool.org/ftp/verilator-4.020.tgz",
-		    "src_root_path": "{install_path}/verilator-4.020",
-        "pre_custom_runl": ["export VERILATOR_ROOT={path}"],
-        "post_custom_runl": [
-            "cp -r {path}/share/verilator/include {path}",
-            "cp {path}/share/verilator/bin/* {path}/bin"
-		    ],
-		    "configure": "",
-		    "deps": {
-            "ubuntu": "autoconf flex bison",
-            "opensuse": "flex bison"
-        },
-		    "env" : [
-			      "export VERILATOR_ROOT={path}",
-			      "export PATH={path}/bin:$PATH"
-		    ]
-    },
-    {
-		    "name": "yosys",
-        "class": ["all", "dev"],
-		    "git": "https://github.com/YosysHQ/yosys.git",
-		    "src_root_path": "{install_path}/yosys",
-        "pre_custom_run": ["cd {src_root_path}; make config-gcc", "cd {src_root_path}; make install -j PREFIX={path}"],
-		    "deps": {
-            "ubuntu": "build-essential bison flex libreadline-dev gawk tcl-dev libffi-dev graphviz xdot pkg-config zlib1g-dev",
-            "opensuse": "flex bison"
-        },
-		    "env" : [
-			      "export PATH={path}/bin:$PATH"
-		    ]
-    },
-    {
-		    "name": "gtkwave",
-        "class": ["all", "dev", "gui"],
-		    "flow": "default_cpp",
-		    "url": "http://gtkwave.sourceforge.net/gtkwave-gtk3-3.3.98.tar.gz",
-        "pre_custom_run": [
-            "patch {src_root_path}/src/tcl_commands.c < {install_script_path}/gtkwave/tcl_commands.diff",
-            "patch {src_root_path}/src/tcl_support_commands.c < {install_script_path}/gtkwave/tcl_support_commands.diff",
-            "patch {src_root_path}/src/tcl_support_commands.h < {install_script_path}/gtkwave/tcl_support_commands_h.diff",
-            "patch {src_root_path}/src/main.c < {install_script_path}/gtkwave/main.diff",
-            "patch {src_root_path}/src/vcd_partial.c < {install_script_path}/gtkwave/vcd_partial.diff",
-            "patch {src_root_path}/src/wavewindow.c < {install_script_path}/gtkwave/wavewindow.diff",
-            "patch {src_root_path}/src/ttranslate.h < {install_script_path}/gtkwave/ttranslate.diff",
-            "patch {src_root_path}/src/helpers/shmidcat.c < {install_script_path}/gtkwave/shmidcat.diff"
-        ],
-		    "deps": {
-            "ubuntu": "gperf libgtk2.0-dev tk-dev liblzma-dev libbz2-dev",
-            "opensuse": "gperf gtk2-devel"
-        },
-		    "src_root_path": "{install_path}/gtkwave-gtk3-3.3.98",
-		    "configure": "",
-		    "env" : [
-			      "export PATH={path}/bin:$PATH"
-		    ]
-    },
-    {
-		    "name": "systemc",
-        "class": ["all", "dev"],
-		    "flow": "default_cpp",
-		    "url": "http://accellera.org/images/downloads/standards/systemc/systemc-2.3.2.tar.gz",
-		    "src_root_path": "{install_path}/systemc-2.3.2",
-        "configure": "--libdir='${prefix}/lib'",
-		    "env" : [
-			      "export SYSTEMC_DISABLE_COPYRIGHT_MESSAGE=1",
-			      "export SYSTEMC_HOME={path}",
-			      "export SYSTEMC_INCLUDE={path}/include",
-			      "export SYSTEMC_LIBDIR={path}/lib-linux64"
-		    ]
-    },
-    {
-		    "name": "scv",
-        "class": ["all", "dev"],
-		    "flow": "default_cpp",
-		    "url": "http://www.accellera.org/images/downloads/standards/systemc/scv-2.0.1.tar.gz",
-		    "src_root_path": "{install_path}/scv-2.0.1",
-        "configure": "--with-systemc=$SYSTEMC_HOME",
-		    "env" : [
-			      "export SCV_HOME={path}",
-			      "export SCV_INCLUDE={path}/include",
-			      "export SCV_LIBDIR={path}/lib-linux64"
-		    ]
-    },
-	  {
-		    "name": "pyenv",
-        "class": ["all", "dev", "gui"],
-		    "git": "https://github.com/pyenv/pyenv.git",
-		    "src_root_path": "{install_path}/.pyenv",
-        "deps": {
-            "ubuntu": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev",
-            "opensuse": "openssl-devel ncurses-devel readline-devel zlib-devel tk-devel libffi-devel"
-        },
-		    "post_custom_run" : [
-			      "pyenv install -s 3.7.5",
-			      "pyenv global 3.7.5"
-		    ],
-		    "env" : [
-			      "export PYENV_ROOT={install_path}/.pyenv",
-			      "export PATH={install_path}/.pyenv/bin:$PATH",
-			      "eval \"$(pyenv init -)\"",
-				    "export PATH={install_path}/.pyenv/libexec:$PATH"
-		    ]
-	  },
-    {
-		    "name": "pygears",
-        "class": ["all", "dev", "gui", "min"],
-		    "pip" : "git+git://github.com/bogdanvuk/pygears.git",
-        "deps": {
-            "ubuntu": "git",
-            "opensuse": "git"
-        }
-    },
-	  {
-		    "name": "spacemacs_python",
-        "class": ["all", "dev"],
-		    "post_custom_run" : [
-			      "pip3 install autoflake epc flake8 importmagic jedi yapf"
-		    ]
-	  },
-	  {
-		    "name": "graphviz",
-        "class": ["all", "dev", "gui"],
-		    "url": "http://pkgs.fedoraproject.org/repo/pkgs/graphviz/graphviz-2.38.0.tar.gz/5b6a829b2ac94efcd5fa3c223ed6d3ae/graphviz-2.38.0.tar.gz",
-		    "src_root_path": "{install_path}/graphviz-2.38.0",
-        "flow": "default_cpp",
-		    "configure": "",
-        "deps": {
-            "ubuntu": "libpng-dev",
-            "opensuse": "libpng-devel"
-        },
-		    "env" : [
-			      "export PATH={path}/bin:$PATH",
-            "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
-            "export LIBRARY_PATH=$LD_LIBRARY_PATH",
-            "export CPATH={path}/include:$CPATH",
-            "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
-		    ]
-	  },
-	  {
-		    "name": "gearbox",
-        "class": ["all", "dev", "gui"],
-		    "pip" : "git+git://github.com/bogdanvuk/gearbox.git",
-        "deps": {
-            "ubuntu": "git libqt5gui5",
-            "opensuse": "git"
-        }
-	  },
-	  {
-		    "name": "ngspice",
-        "class": ["all", "control"],
-		    "url": "https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/30/ngspice-30.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fngspice%2Ffiles%2Flatest%2Fdownload&ts=1564825525",
-		    "src_root_path": "{install_path}/ngspice-30",
-        "flow": "default_cpp",
-		    "configure": "--with-ngshared --enable-openmp --enable-xspice",
-		    "env" : [
-			      "export PATH={path}/bin:$PATH",
-            "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
-            "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
-		    ]
-	  }
+	{
+		"name": "emacs",
+		"class": [
+			"all",
+			"dev"
+		],
+		"flow": "default_cpp",
+		"url": "ftp://ftp.gnu.org/pub/gnu/emacs/emacs-26.3.tar.gz",
+		"src_root_path": "{install_path}/emacs-26.3",
+		"deps": {
+			"ubuntu": "libjpeg-dev gnutls-dev libx11-dev libpng-dev libncurses5-dev libxml2-dev libgtk-3-dev libgtk2.0-dev libtiff-dev libgif-dev libxpm-dev",
+			"opensuse": "libjpeg-devel libgnutls-devel libX11-devel libpng-devel libncurses5 libxml2-devel gtk3-devel gtk2-devel libtiff-devel giflib-devel libXpm-devel"
+		},
+		"configure": "",
+		"env": [
+			"export PATH={path}/bin:$PATH"
+		]
+	},
+	{
+		"name": "spacemacs",
+		"class": [
+			"all",
+			"dev"
+		],
+		"git": "https://github.com/syl20bnr/spacemacs.git",
+		"src_root_path": "{home_path}/.emacs.d",
+		"copy": [
+			[
+				"{install_script_path}/.spacemacs",
+				"{home_path}"
+			]
+		],
+		"post_custom_run": [
+			"cd {home_path}/.emacs.d; git checkout develop"
+		]
+	},
+	{
+		"name": "verilator",
+		"class": [
+			"all",
+			"dev",
+			"gui",
+			"min"
+		],
+		"flow": "default_cpp",
+		"url": "https://www.veripool.org/ftp/verilator-4.020.tgz",
+		"src_root_path": "{install_path}/verilator-4.020",
+		"pre_custom_runl": [
+			"export VERILATOR_ROOT={path}"
+		],
+		"post_custom_runl": [
+			"cp -r {path}/share/verilator/include {path}",
+			"cp {path}/share/verilator/bin/* {path}/bin"
+		],
+		"configure": "",
+		"deps": {
+			"ubuntu": "autoconf flex bison",
+			"opensuse": "flex bison"
+		},
+		"env": [
+			"export VERILATOR_ROOT={path}",
+			"export PATH={path}/bin:$PATH"
+		]
+	},
+	{
+		"name": "yosys",
+		"class": [
+			"all",
+			"dev"
+		],
+		"git": "https://github.com/YosysHQ/yosys.git",
+		"src_root_path": "{install_path}/yosys",
+		"pre_custom_run": [
+			"cd {src_root_path}; make config-gcc",
+			"cd {src_root_path}; make install -j PREFIX={path}"
+		],
+		"deps": {
+			"ubuntu": "build-essential bison flex libreadline-dev gawk tcl-dev libffi-dev graphviz xdot pkg-config zlib1g-dev",
+			"opensuse": "flex bison"
+		},
+		"env": [
+			"export PATH={path}/bin:$PATH"
+		]
+	},
+	{
+		"name": "gtkwave",
+		"class": [
+			"all",
+			"dev",
+			"gui"
+		],
+		"flow": "default_cpp",
+		"url": "http://gtkwave.sourceforge.net/gtkwave-gtk3-3.3.98.tar.gz",
+		"pre_custom_run": [
+			"patch {src_root_path}/src/tcl_commands.c < {install_script_path}/gtkwave/tcl_commands.diff",
+			"patch {src_root_path}/src/tcl_support_commands.c < {install_script_path}/gtkwave/tcl_support_commands.diff",
+			"patch {src_root_path}/src/tcl_support_commands.h < {install_script_path}/gtkwave/tcl_support_commands_h.diff",
+			"patch {src_root_path}/src/main.c < {install_script_path}/gtkwave/main.diff",
+			"patch {src_root_path}/src/vcd_partial.c < {install_script_path}/gtkwave/vcd_partial.diff",
+			"patch {src_root_path}/src/wavewindow.c < {install_script_path}/gtkwave/wavewindow.diff",
+			"patch {src_root_path}/src/ttranslate.h < {install_script_path}/gtkwave/ttranslate.diff",
+			"patch {src_root_path}/src/helpers/shmidcat.c < {install_script_path}/gtkwave/shmidcat.diff"
+		],
+		"deps": {
+			"ubuntu": "gperf libgtk2.0-dev tk-dev liblzma-dev libbz2-dev graphviz-dev",
+			"opensuse": "gperf gtk2-devel"
+		},
+		"src_root_path": "{install_path}/gtkwave-gtk3-3.3.98",
+		"configure": "",
+		"env": [
+			"export PATH={path}/bin:$PATH"
+		]
+	},
+	{
+		"name": "systemc",
+		"class": [
+			"all",
+			"dev"
+		],
+		"flow": "default_cpp",
+		"url": "http://accellera.org/images/downloads/standards/systemc/systemc-2.3.2.tar.gz",
+		"src_root_path": "{install_path}/systemc-2.3.2",
+		"configure": "--libdir='${prefix}/lib'",
+		"env": [
+			"export SYSTEMC_DISABLE_COPYRIGHT_MESSAGE=1",
+			"export SYSTEMC_HOME={path}",
+			"export SYSTEMC_INCLUDE={path}/include",
+			"export SYSTEMC_LIBDIR={path}/lib-linux64"
+		]
+	},
+	{
+		"name": "scv",
+		"class": [
+			"all",
+			"dev"
+		],
+		"flow": "default_cpp",
+		"url": "http://www.accellera.org/images/downloads/standards/systemc/scv-2.0.1.tar.gz",
+		"src_root_path": "{install_path}/scv-2.0.1",
+		"configure": "--with-systemc=$SYSTEMC_HOME",
+		"env": [
+			"export SCV_HOME={path}",
+			"export SCV_INCLUDE={path}/include",
+			"export SCV_LIBDIR={path}/lib-linux64"
+		]
+	},
+	{
+		"name": "pyenv",
+		"class": [
+			"all",
+			"dev",
+			"gui"
+		],
+		"git": "https://github.com/pyenv/pyenv.git",
+		"src_root_path": "{install_path}/.pyenv",
+		"deps": {
+			"ubuntu": "libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl libncurses5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev",
+			"opensuse": "openssl-devel ncurses-devel readline-devel zlib-devel tk-devel libffi-devel"
+		},
+		"post_custom_run": [
+			"pyenv install -s 3.7.5",
+			"pyenv global 3.7.5"
+		],
+		"env": [
+			"export PYENV_ROOT={install_path}/.pyenv",
+			"export PATH={install_path}/.pyenv/bin:$PATH",
+			"eval \"$(pyenv init -)\"",
+			"export PATH={install_path}/.pyenv/libexec:$PATH"
+		]
+	},
+	{
+		"name": "pygears",
+		"class": [
+			"all",
+			"dev",
+			"gui",
+			"min"
+		],
+		"pip": "git+https://github.com/bogdanvuk/pygears.git",
+		"deps": {
+			"ubuntu": "git",
+			"opensuse": "git"
+		}
+	},
+	{
+		"name": "spacemacs_python",
+		"class": [
+			"all",
+			"dev"
+		],
+		"post_custom_run": [
+			"pip3 install autoflake epc flake8 importmagic jedi yapf"
+		]
+	},
+	{
+		"name": "graphviz",
+		"class": [
+			"all",
+			"dev",
+			"gui"
+		],
+		"url": "http://pkgs.fedoraproject.org/repo/pkgs/graphviz/graphviz-2.38.0.tar.gz/5b6a829b2ac94efcd5fa3c223ed6d3ae/graphviz-2.38.0.tar.gz",
+		"src_root_path": "{install_path}/graphviz-2.38.0",
+		"flow": "default_cpp",
+		"configure": "",
+		"deps": {
+			"ubuntu": "libpng-dev",
+			"opensuse": "libpng-devel"
+		},
+		"env": [
+			"export PATH={path}/bin:$PATH",
+			"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
+			"export LIBRARY_PATH=$LD_LIBRARY_PATH",
+			"export CPATH={path}/include:$CPATH",
+			"export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
+		]
+	},
+	{
+		"name": "gearbox",
+		"class": [
+			"all",
+			"dev",
+			"gui"
+		],
+		"pip": "git+https://github.com/bogdanvuk/gearbox.git",
+		"deps": {
+			"ubuntu": "git libqt5gui5",
+			"opensuse": "git"
+		}
+	},
+	{
+		"name": "ngspice",
+		"class": [
+			"all",
+			"control"
+		],
+		"url": "https://downloads.sourceforge.net/project/ngspice/ng-spice-rework/30/ngspice-30.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fngspice%2Ffiles%2Flatest%2Fdownload&ts=1564825525",
+		"src_root_path": "{install_path}/ngspice-30",
+		"flow": "default_cpp",
+		"configure": "--with-ngshared --enable-openmp --enable-xspice",
+		"env": [
+			"export PATH={path}/bin:$PATH",
+			"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{path}/lib",
+			"export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:{path}/lib/pkgconfig"
+		]
+	}
 ]
