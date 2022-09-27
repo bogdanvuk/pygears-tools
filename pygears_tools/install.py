@@ -91,7 +91,7 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
         "tools_path": expand_path(tools_path) if tools_path else None,
         "tools_install_path": expand_path(tools_path if tools_path else '~/.pygears/tools'),
         "install_script_path": expand_path(os.path.dirname(__file__)),
-        "tools_sh_path": expand_path(os.path.join(tools_path, "tools.sh")) if tools_path else None,
+        "tools_sh_path": expand_path(os.path.join(tools_path, "tools.sh") if tools_path else f"{expand_path('~/.pygears/tools/tools.sh')}"),
         "pkgs_fn": expand_path(pkgs_fn),
         'dry_run': dry_run
     }
@@ -130,7 +130,7 @@ def install(pkgs_fn, pkg_names, tools_path, home_path, do_install_deps, list_dep
         with open(cfg["tools_sh_path"], "w") as text_file:
             print("#!/bin/bash", file=text_file)
             print("# Script for setting up the environment for all the tools", file=text_file)
-            print("# Tools installed relative to: {}".format(cfg["tools_path"]), file=text_file)
+            print("# Tools installed relative to: {}".format(cfg["tools_install_path"]), file=text_file)
             print("", file=text_file)
 
             print("# Setting new home directory:", file=text_file)
@@ -274,6 +274,8 @@ def main(argv=sys.argv):
     install(args.pkgs_fn, args.pkg_names, args.tools_path, args.home_path, args.install_deps,
             args.list_deps, args.dry_run)
 
+if __name__ == "__main__":
+    main()
 
 # main([
 #     '', '-d'
